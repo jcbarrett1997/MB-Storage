@@ -1,35 +1,71 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Illustration of a 20ft by 8ft storage container">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Diagram of a 20ft by 8ft storage container with double doors on the front">
   <rect width="640" height="360" fill="#e9eff4"/>
   <rect x="0" y="300" width="640" height="60" fill="#d7dfe6"/>
-  <!-- container body -->
-  <g>
-    <rect x="60" y="110" width="460" height="190" fill="#1E4C6B"/>
-    <polygon points="520,110 590,80 590,270 520,300" fill="#163a52"/>
-    <polygon points="60,110 130,80 590,80 520,110" fill="#2a5d80"/>
-    <!-- corrugation -->
-    <g fill="#173f5a">
-      <rect x="80" y="120" width="14" height="170"/><rect x="112" y="120" width="14" height="170"/>
-      <rect x="144" y="120" width="14" height="170"/><rect x="176" y="120" width="14" height="170"/>
-      <rect x="208" y="120" width="14" height="170"/><rect x="240" y="120" width="14" height="170"/>
-      <rect x="272" y="120" width="14" height="170"/><rect x="304" y="120" width="14" height="170"/>
-      <rect x="336" y="120" width="14" height="170"/><rect x="368" y="120" width="14" height="170"/>
-      <rect x="400" y="120" width="14" height="170"/><rect x="432" y="120" width="14" height="170"/>
-    </g>
-    <!-- doors -->
-    <rect x="458" y="118" width="58" height="176" fill="#00A34A"/>
-    <rect x="484" y="118" width="4" height="176" fill="#008a3f"/>
-    <rect x="466" y="150" width="8" height="60" rx="3" fill="#e6f6ee"/>
-    <rect x="498" y="150" width="8" height="60" rx="3" fill="#e6f6ee"/>
+
+  <!-- ground shadow -->
+  <ellipse cx="330" cy="305" rx="270" ry="20" fill="#c3ccd4"/>
+
+  <!-- ROOF (parallelogram: front-door top edge receding back-left) -->
+  <polygon points="360,118 516,118 236,78 80,78" fill="#2a5d80"/>
+
+  <!-- SIDE (long 20ft face receding back-left) -->
+  <polygon points="360,118 80,78 80,262 360,300" fill="#1a4763"/>
+  <!-- side corrugation ridges -->
+  <g stroke="#163a52" stroke-width="6" opacity=".55">
+    <line x1="112" y1="83" x2="112" y2="258"/>
+    <line x1="148" y1="88" x2="148" y2="262"/>
+    <line x1="184" y1="92" x2="184" y2="266"/>
+    <line x1="220" y1="97" x2="220" y2="270"/>
+    <line x1="256" y1="101" x2="256" y2="274"/>
+    <line x1="292" y1="106" x2="292" y2="278"/>
+    <line x1="328" y1="110" x2="328" y2="283"/>
   </g>
-  <!-- dimension arrows -->
+
+  <!-- FRONT DOOR END (short 8ft face, facing viewer) -->
+  <rect x="360" y="118" width="156" height="182" fill="#1E4C6B"/>
+  <!-- corner posts -->
+  <rect x="360" y="118" width="10" height="182" fill="#163a52"/>
+  <rect x="506" y="118" width="10" height="182" fill="#163a52"/>
+  <rect x="360" y="118" width="156" height="10" fill="#2a5d80"/>
+  <rect x="360" y="290" width="156" height="10" fill="#12324a"/>
+
+  <!-- two door leaves -->
+  <rect x="372" y="128" width="80" height="162" fill="#20537a"/>
+  <rect x="452" y="128" width="52" height="162" fill="#1d4a6e"/>
+  <!-- centre seam -->
+  <rect x="450" y="128" width="4" height="162" fill="#12324a"/>
+
+  <!-- vertical locking rods -->
+  <g fill="#cdd6dd">
+    <rect x="392" y="132" width="5" height="154" rx="2"/>
+    <rect x="428" y="132" width="5" height="154" rx="2"/>
+    <rect x="466" y="132" width="5" height="154" rx="2"/>
+    <rect x="490" y="132" width="5" height="154" rx="2"/>
+  </g>
+  <!-- door handles (brand green) -->
+  <g fill="#00A34A">
+    <rect x="386" y="196" width="18" height="9" rx="3"/>
+    <rect x="422" y="196" width="18" height="9" rx="3"/>
+    <rect x="460" y="196" width="18" height="9" rx="3"/>
+    <rect x="484" y="196" width="18" height="9" rx="3"/>
+  </g>
+
+  <!-- DIMENSION ARROWS -->
   <g stroke="#22190A" stroke-width="2" fill="none">
-    <line x1="60" y1="330" x2="520" y2="330"/>
-    <polyline points="70,324 60,330 70,336"/>
-    <polyline points="510,324 520,330 510,336"/>
-    <line x1="30" y1="110" x2="30" y2="300"/>
-    <polyline points="24,120 30,110 36,120"/>
-    <polyline points="24,290 30,300 36,290"/>
+    <!-- height (right edge) -->
+    <line x1="536" y1="118" x2="536" y2="300"/>
+    <polyline points="530,128 536,118 542,128"/>
+    <polyline points="530,290 536,300 542,290"/>
+    <!-- width of door face (bottom) -->
+    <line x1="360" y1="322" x2="516" y2="322"/>
+    <polyline points="370,316 360,322 370,328"/>
+    <polyline points="506,316 516,322 506,328"/>
+    <!-- length (receding bottom edge) -->
+    <line x1="86" y1="272" x2="352" y2="308"/>
+    <polyline points="96,270 86,272 92,281"/>
+    <polyline points="342,300 352,308 344,309"/>
   </g>
-  <text x="290" y="352" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#22190A" text-anchor="middle">20ft (6.1m)</text>
-  <text x="18" y="210" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#22190A" text-anchor="middle" transform="rotate(-90 18 210)">8ft (2.4m)</text>
+  <text x="438" y="345" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#22190A" text-anchor="middle">8ft wide (2.4m)</text>
+  <text x="560" y="214" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#22190A" text-anchor="middle" transform="rotate(-90 560 214)">8ft 6in high</text>
+  <text x="205" y="305" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#22190A" text-anchor="middle" transform="rotate(7 205 305)">20ft long (6.1m)</text>
 </svg>
