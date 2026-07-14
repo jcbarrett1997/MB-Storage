@@ -11,7 +11,56 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
   initQuoteForm();
+  initReveal();
+  initCounters();
 });
+
+var prefersReducedMotion = window.matchMedia &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Scroll-reveal: fade/slide elements in as they enter the viewport.
+   Classes are added by JS, so with JS disabled everything stays visible. */
+function initReveal() {
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) return;
+  var selector = 'section .section-head, section .card, .feature-banner, ' +
+    '.unit-card, .stat, .access-steps-row li, .dim-table, details';
+  var els = Array.prototype.slice.call(document.querySelectorAll(selector));
+  if (!els.length) return;
+  els.forEach(function (el) { el.classList.add('reveal'); });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(function (el) { io.observe(el); });
+}
+
+/* Count-up animation for stat numbers with a [data-count] attribute. */
+function initCounters() {
+  var nums = Array.prototype.slice.call(document.querySelectorAll('[data-count]'));
+  if (!nums.length) return;
+  var run = function (el) {
+    var target = parseFloat(el.getAttribute('data-count'));
+    var suffix = el.getAttribute('data-suffix') || '';
+    if (prefersReducedMotion) { el.textContent = target.toLocaleString() + suffix; return; }
+    var dur = 1200, start = null;
+    var step = function (now) {
+      if (start === null) start = now;
+      var p = Math.min((now - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased).toLocaleString() + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+  if (!('IntersectionObserver' in window)) { nums.forEach(run); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { run(en.target); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.4 });
+  nums.forEach(function (el) { io.observe(el); });
+}
 
 /* ------------------------------------------------------------------
    Instant quote engine.

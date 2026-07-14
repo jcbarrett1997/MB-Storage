@@ -167,3 +167,55 @@ details p { margin-top: .6rem; color: var(--grey); }
   .grid-3, .grid-2, .form-grid, .footer-grid { grid-template-columns: 1fr; }
   .hero { padding: 3rem 0; }
 }
+
+/* =====================================================
+   Refinement pass — motion, polish & tighter integration
+   ===================================================== */
+
+/* Animated hero accent blobs + staggered entrance */
+.hero::after { animation: floatBlob 15s ease-in-out infinite; }
+.hero::before {
+  content: ""; position: absolute; left: -130px; bottom: -170px; width: 440px; height: 440px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(0,163,74,.20), transparent 70%);
+  z-index: 0; animation: floatBlob 20s ease-in-out infinite reverse;
+}
+@keyframes floatBlob { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-26px,22px); } }
+
+.hero-inner > * { opacity: 0; transform: translateY(16px); animation: heroIn .7s cubic-bezier(.2,.7,.2,1) forwards; }
+.hero-inner > *:nth-child(1) { animation-delay: .05s; }
+.hero-inner > *:nth-child(2) { animation-delay: .15s; }
+.hero-inner > *:nth-child(3) { animation-delay: .25s; }
+.hero-inner > *:nth-child(4) { animation-delay: .35s; }
+.hero-inner > *:nth-child(5) { animation-delay: .45s; }
+@keyframes heroIn { to { opacity: 1; transform: none; } }
+
+/* Scroll-reveal (class added by JS so content stays visible without JS) */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); will-change: opacity, transform; }
+.reveal.in { opacity: 1; transform: none; }
+
+/* Animated stats band */
+.stats-band { background: #fff; padding: 2.6rem 0; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; text-align: center; }
+.stat { padding: 1.5rem 1rem; border-radius: var(--radius); background: var(--bg-soft); border: 1px solid var(--line); transition: transform .18s ease, box-shadow .18s ease; }
+.stat:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.stat .num { font-size: clamp(1.9rem, 4.4vw, 2.7rem); font-weight: 800; color: var(--green-dark); line-height: 1; letter-spacing: -.02em; }
+.stat .lab { margin-top: .5rem; color: var(--navy); font-weight: 600; font-size: .95rem; }
+@media (max-width: 680px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+
+/* Card + banner micro-interactions */
+.card { transition: transform .18s ease, box-shadow .18s ease; }
+.card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(30,76,107,.14); }
+.feature-banner { position: relative; }
+.feature-banner img { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+a.feature-banner:hover img { transform: scale(1.035); }
+
+/* Buttons: smoother shared transition */
+.btn { transition: transform .15s ease, background .15s ease, box-shadow .15s ease; }
+.btn-primary:hover { box-shadow: 0 8px 20px rgba(0,163,74,.28); }
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .hero-inner > * { opacity: 1 !important; transform: none !important; }
+}
