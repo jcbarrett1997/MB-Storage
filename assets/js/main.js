@@ -63,102 +63,52 @@ function initCounters() {
 }
 
 /* ------------------------------------------------------------------
-   Instant quote engine.
-   Prices are deliberately NOT rendered anywhere on the page — they are
-   only placed into the auto-response email sent to the customer.
+   Instant quote form.
+   The form posts to a serverless function (/.netlify/functions/quote),
+   which calculates the price server-side and emails the customer their
+   quote from @mbstorage.co.uk. No pricing is held in this file, so prices
+   are never exposed to the browser or the page.
 ------------------------------------------------------------------- */
-var UNITS = {
-  '20ft': {
-    label: '20ft x 8ft storage container',
-    pcmExVat: 160.00,
-    deposit: 150.00
-  },
-  '8ft': {
-    label: '8ft x 6ft 6in storage container',
-    avail: 'Available at our Batley site only',
-    pcmExVat: 82.50,
-    deposit: 75.00
-  }
-};
-var VAT_RATE = 0.20;
-
-function money(n) {
-  return '£' + n.toFixed(2);
-}
-
-function buildQuoteEmail(unitKey, name, location, moveIn) {
-  var u = UNITS[unitKey];
-  var incVat = u.pcmExVat * (1 + VAT_RATE);
-  var lines = [
-    'Hi ' + name + ',',
-    '',
-    'Thank you for your enquiry — here is your instant quote from MB Storage.',
-    '',
-    'YOUR QUOTE',
-    '----------------------------------------',
-    'Unit: ' + u.label,
-    (u.avail ? 'Availability: ' + u.avail : null),
-    (location ? 'Preferred site: ' + location : null),
-    (moveIn ? 'Preferred move-in date: ' + moveIn : null),
-    '',
-    'Monthly rental: ' + money(u.pcmExVat) + ' + VAT per calendar month',
-    '(' + money(incVat) + ' including VAT)',
-    '',
-    'Refundable deposit: ' + money(u.deposit),
-    'Your deposit is refunded in full when you leave, provided the unit is left as it was found.',
-    '',
-    'INCLUDED WITH EVERY UNIT',
-    '----------------------------------------',
-    '- High-quality padlock provided',
-    '- 24/7 CCTV with motion-sensing cameras',
-    '- Mobile phone entry system — access your unit any time',
-    '- Round-the-clock support',
-    '',
-    'NEXT STEPS',
-    '----------------------------------------',
-    'Reply to this email or call us on 07375 355233 to confirm your booking and arrange your move-in.',
-    '',
-    'Kind regards,',
-    'MB Storage',
-    '07375 355233 | info@mbstorage.co.uk | www.mbstorage.co.uk'
-  ];
-  return lines.filter(function (l) { return l !== null; }).join('\n');
-}
+var QUOTE_ENDPOINT = '/.netlify/functions/quote';
 
 function initQuoteForm() {
   var form = document.getElementById('quote-form');
   if (!form) return;
+  var status = document.getElementById('quote-status');
+  var btn = form.querySelector('button[type="submit"]');
 
   form.addEventListener('submit', function (e) {
-    var unitKey = form.querySelector('[name="container_size"]').value;
-    var name = (form.querySelector('[name="name"]').value || 'there').trim();
-    var locEl = form.querySelector('[name="preferred_site"]');
-    var dateEl = form.querySelector('[name="move_in_date"]');
-    var status = document.getElementById('quote-status');
+    e.preventDefault();
 
-    if (!UNITS[unitKey]) {
-      e.preventDefault();
+    var size = form.querySelector('[name="container_size"]');
+    if (!size || !size.value) {
       if (status) { status.className = 'status-msg err'; status.textContent = 'Please choose a container size.'; }
       return;
     }
 
-    // Inject the personalised quote into the auto-response so the price
-    // arrives in the customer's inbox, never on the page.
-    var auto = form.querySelector('[name="_autoresponse"]');
-    if (auto) {
-      auto.value = buildQuoteEmail(
-        unitKey,
-        name,
-        locEl ? locEl.value : '',
-        dateEl ? dateEl.value : ''
-      );
-    }
-    // Human-readable summary for the notification MB Storage receives.
-    var summary = form.querySelector('[name="quote_summary"]');
-    if (summary) {
-      var u = UNITS[unitKey];
-      summary.value = u.label + ' — ' + money(u.pcmExVat) + ' + VAT pcm, deposit ' + money(u.deposit);
-    }
+    var data = {};
+    new FormData(form).forEach(function (v, k) { data[k] = v; });
+
     if (status) { status.className = 'status-msg ok'; status.textContent = 'Sending your quote…'; }
+    if (btn) { btn.disabled = true; }
+
+    fetch(QUOTE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function (r) {
+      if (!r.ok) throw new Error('Request failed (' + r.status + ')');
+      return r.json();
+    }).then(function () {
+      window.location.href = 'thank-you.html';
+    }).catch(function () {
+      if (status) {
+        status.className = 'status-msg err';
+        status.innerHTML = "Sorry, something went wrong sending your quote. Please call us on " +
+          "<a href=\"tel:+447375355233\">07375 355233</a> or email " +
+          "<a href=\"mailto:info@mbstorage.co.uk\">info@mbstorage.co.uk</a>.";
+      }
+      if (btn) { btn.disabled = false; }
+    });
   });
 }

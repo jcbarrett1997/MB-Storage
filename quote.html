@@ -45,14 +45,9 @@
         <p><strong>How it works:</strong> complete the form below and your instant quote is emailed to you straight away. Want to go ahead? Tick "I'd like to book" and we'll reserve your unit and confirm your move-in.</p>
       </div>
 
-      <form id="quote-form" class="form-card" action="https://formsubmit.co/info@mbstorage.co.uk" method="POST">
-        <!-- FormSubmit configuration -->
-        <input type="hidden" name="_subject" value="New quote / booking request — mbstorage.co.uk">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_autoresponse" value="">
-        <input type="hidden" name="quote_summary" value="">
-        <input type="hidden" name="_next" value="https://www.mbstorage.co.uk/thank-you.html">
-        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <form id="quote-form" class="form-card" action="/.netlify/functions/quote" method="POST">
+        <!-- Spam honeypot — bots fill this, humans don't -->
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
 
         <div class="form-grid">
           <div>
