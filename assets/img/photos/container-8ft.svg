@@ -1,60 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Diagram of an 8ft by 6ft 6in storage container with double doors on the front">
-  <rect width="640" height="360" fill="#e9eff4"/>
-  <rect x="0" y="300" width="640" height="60" fill="#d7dfe6"/>
-
-  <!-- ground shadow -->
-  <ellipse cx="330" cy="305" rx="200" ry="18" fill="#c3ccd4"/>
-
-  <!-- ROOF -->
-  <polygon points="330,128 486,128 356,88 200,88" fill="#2a5d80"/>
-
-  <!-- SIDE (short 8ft length receding back-left) -->
-  <polygon points="330,128 200,88 200,258 330,300" fill="#1a4763"/>
-  <g stroke="#163a52" stroke-width="6" opacity=".55">
-    <line x1="232" y1="93" x2="232" y2="262"/>
-    <line x1="268" y1="98" x2="268" y2="270"/>
-    <line x1="304" y1="103" x2="304" y2="278"/>
-  </g>
-
-  <!-- FRONT DOOR END (6ft6 wide face, facing viewer) -->
-  <rect x="330" y="128" width="156" height="172" fill="#1E4C6B"/>
-  <rect x="330" y="128" width="10" height="172" fill="#163a52"/>
-  <rect x="476" y="128" width="10" height="172" fill="#163a52"/>
-  <rect x="330" y="128" width="156" height="10" fill="#2a5d80"/>
-  <rect x="330" y="290" width="156" height="10" fill="#12324a"/>
-
-  <!-- door leaves -->
-  <rect x="342" y="138" width="80" height="152" fill="#20537a"/>
-  <rect x="422" y="138" width="52" height="152" fill="#1d4a6e"/>
-  <rect x="420" y="138" width="4" height="152" fill="#12324a"/>
-
-  <!-- locking rods -->
-  <g fill="#cdd6dd">
-    <rect x="362" y="142" width="5" height="144" rx="2"/>
-    <rect x="398" y="142" width="5" height="144" rx="2"/>
-    <rect x="436" y="142" width="5" height="144" rx="2"/>
-    <rect x="460" y="142" width="5" height="144" rx="2"/>
-  </g>
-  <g fill="#00A34A">
-    <rect x="356" y="200" width="18" height="9" rx="3"/>
-    <rect x="392" y="200" width="18" height="9" rx="3"/>
-    <rect x="430" y="200" width="18" height="9" rx="3"/>
-    <rect x="454" y="200" width="18" height="9" rx="3"/>
-  </g>
-
-  <!-- DIMENSION ARROWS -->
-  <g stroke="#22190A" stroke-width="2" fill="none">
-    <line x1="506" y1="128" x2="506" y2="300"/>
-    <polyline points="500,138 506,128 512,138"/>
-    <polyline points="500,290 506,300 512,290"/>
-    <line x1="330" y1="322" x2="486" y2="322"/>
-    <polyline points="340,316 330,322 340,328"/>
-    <polyline points="476,316 486,322 476,328"/>
-    <line x1="206" y1="268" x2="322" y2="308"/>
-    <polyline points="216,267 206,268 212,277"/>
-    <polyline points="312,301 322,308 314,309"/>
-  </g>
-  <text x="408" y="345" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#22190A" text-anchor="middle">6ft 6in wide (2.0m)</text>
-  <text x="530" y="214" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#22190A" text-anchor="middle" transform="rotate(-90 530 214)">7ft high</text>
-  <text x="250" y="300" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#22190A" text-anchor="middle" transform="rotate(10 250 300)">8ft long (2.4m)</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470" role="img" aria-label="8ft by 6ft 6in storage container with double doors on the front">
+<defs>
+<linearGradient id="gTop" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#5c86a5"/><stop offset="1" stop-color="#3f6b8a"/></linearGradient>
+<linearGradient id="gSide2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#33648a"/><stop offset="1" stop-color="#20496b"/></linearGradient>
+<linearGradient id="gDoor" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1b4160"/><stop offset="1" stop-color="#123146"/></linearGradient>
+<radialGradient id="gShadow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#233" stop-opacity="0.28"/><stop offset="1" stop-color="#233" stop-opacity="0"/></radialGradient>
+<marker id="ah" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto"><path d="M1,1 L8,4.5 L1,8 z" fill="#4a4636"/></marker>
+</defs>
+<ellipse cx="317" cy="320" rx="300" ry="34" fill="url(#gShadow)"/>
+<polygon points="392.0,150.0 560.0,150.0 410.0,104.0 242.0,104.0" fill="url(#gTop)"/>
+<polygon points="392.0,150.0 242.0,104.0 242.0,254.0 392.0,300.0" fill="url(#gSide2)"/>
+<line x1="367.0" y1="142.3" x2="367.0" y2="292.3" stroke="#10324a" stroke-opacity="0.35" stroke-width="4"/>
+<line x1="342.0" y1="134.7" x2="342.0" y2="284.7" stroke="#10324a" stroke-opacity="0.35" stroke-width="4"/>
+<line x1="317.0" y1="127.0" x2="317.0" y2="277.0" stroke="#10324a" stroke-opacity="0.35" stroke-width="4"/>
+<line x1="292.0" y1="119.3" x2="292.0" y2="269.3" stroke="#10324a" stroke-opacity="0.35" stroke-width="4"/>
+<line x1="267.0" y1="111.7" x2="267.0" y2="261.7" stroke="#10324a" stroke-opacity="0.35" stroke-width="4"/>
+<polyline points="242.0,104.0 392.0,150.0 560.0,150.0" fill="none" stroke="#6f97b4" stroke-width="2" stroke-opacity="0.7"/>
+<polygon points="392.0,150.0 560.0,150.0 560.0,300.0 392.0,300.0" fill="url(#gDoor)"/>
+<line x1="476.0" y1="154" x2="476.0" y2="296" stroke="#0c2536" stroke-width="3"/>
+<rect x="416.9" y="158" width="4" height="134" rx="2" fill="#cdd8e0"/>
+<rect x="450.5" y="158" width="4" height="134" rx="2" fill="#cdd8e0"/>
+<rect x="497.5" y="158" width="4" height="134" rx="2" fill="#cdd8e0"/>
+<rect x="531.1" y="158" width="4" height="134" rx="2" fill="#cdd8e0"/>
+<rect x="413.9" y="228.0" width="10" height="8" rx="3" fill="#00A34A"/>
+<rect x="447.5" y="228.0" width="10" height="8" rx="3" fill="#00A34A"/>
+<rect x="494.5" y="228.0" width="10" height="8" rx="3" fill="#00A34A"/>
+<rect x="528.1" y="228.0" width="10" height="8" rx="3" fill="#00A34A"/>
+<line x1="392.0" y1="150.0" x2="392.0" y2="300.0" stroke="#2b5678" stroke-width="2"/>
+<rect x="233.0" y="97.0" width="18" height="14" rx="2.5" fill="#9fb0bd" stroke="#6f8492" stroke-width="1.2"/>
+<rect x="233.0" y="247.0" width="18" height="14" rx="2.5" fill="#9fb0bd" stroke="#6f8492" stroke-width="1.2"/>
+<rect x="383.0" y="143.0" width="18" height="14" rx="2.5" fill="#9fb0bd" stroke="#6f8492" stroke-width="1.2"/>
+<rect x="383.0" y="293.0" width="18" height="14" rx="2.5" fill="#9fb0bd" stroke="#6f8492" stroke-width="1.2"/>
+<rect x="551.0" y="143.0" width="18" height="14" rx="2.5" fill="#9fb0bd" stroke="#6f8492" stroke-width="1.2"/>
+<rect x="551.0" y="293.0" width="18" height="14" rx="2.5" fill="#9fb0bd" stroke="#6f8492" stroke-width="1.2"/>
+<line x1="566" y1="150" x2="606" y2="150" stroke="#c9c4b5" stroke-width="1"/>
+<line x1="566" y1="300" x2="606" y2="300" stroke="#c9c4b5" stroke-width="1"/>
+<line x1="600" y1="152" x2="600" y2="298" stroke="#4a4636" stroke-width="1.6" marker-start="url(#ah)" marker-end="url(#ah)"/>
+<text x="616" y="225" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#4a4636" text-anchor="middle" transform="rotate(90 616 225)">7ft</text>
+<line x1="392" y1="306" x2="392" y2="348" stroke="#c9c4b5" stroke-width="1"/>
+<line x1="560" y1="306" x2="560" y2="348" stroke="#c9c4b5" stroke-width="1"/>
+<line x1="394" y1="342" x2="558" y2="342" stroke="#4a4636" stroke-width="1.6" marker-start="url(#ah)" marker-end="url(#ah)"/>
+<text x="476" y="364" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#4a4636" text-anchor="middle">6ft 6in (2.0m)</text>
+<line x1="392" y1="306" x2="382.0" y2="340.0" stroke="#c9c4b5" stroke-width="1"/>
+<line x1="242" y1="260" x2="232.0" y2="294.0" stroke="#c9c4b5" stroke-width="1"/>
+<line x1="382.0" y1="340.0" x2="232.0" y2="294.0" stroke="#4a4636" stroke-width="1.6" marker-start="url(#ah)" marker-end="url(#ah)"/>
+<text x="307" y="307" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#4a4636" text-anchor="middle" transform="rotate(17.0 307 307)">8ft (2.4m)</text>
 </svg>
