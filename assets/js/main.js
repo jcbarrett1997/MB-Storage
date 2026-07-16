@@ -14,7 +14,25 @@ document.addEventListener('DOMContentLoaded', function () {
   initContactForm();
   initReveal();
   initCounters();
+  initWhatsAppButton();
 });
+
+/* Floating WhatsApp click-to-chat bubble, added to every page. */
+var WHATSAPP_URL = 'https://wa.me/447375355233?text=' +
+  encodeURIComponent("Hi MB Storage, I'd like to ask about storage.");
+
+function initWhatsAppButton() {
+  var a = document.createElement('a');
+  a.className = 'wa-float';
+  a.href = WHATSAPP_URL;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.setAttribute('aria-label', 'Chat with us on WhatsApp');
+  a.innerHTML =
+    '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C9.4 3 4 8.3 4 14.9c0 2.1.6 4.1 1.6 5.9L4 29l8.4-1.6c1.7.9 3.5 1.4 5.5 1.4h.1c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm.1 21.8c-1.8 0-3.5-.5-5-1.3l-.4-.2-5 1 1-4.8-.3-.4c-1-1.6-1.5-3.4-1.5-5.2 0-5.5 4.5-9.9 10.1-9.9 2.7 0 5.2 1 7.1 2.9 1.9 1.9 3 4.4 2.9 7.1 0 5.4-4.5 9.8-9.9 9.8zm5.5-7.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.2-.6-.4z"/></svg>' +
+    '<span>WhatsApp us</span>';
+  document.body.appendChild(a);
+}
 
 /* Generic AJAX form submit → serverless function → thank-you page. */
 function ajaxForm(formId, statusId, endpoint) {
