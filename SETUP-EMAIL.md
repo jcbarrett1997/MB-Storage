@@ -23,33 +23,20 @@ Nothing secret lives in this repository — the API key is stored on Netlify.
 
 ---
 
-## Step 1 — Resend account + verify the sending subdomain
+## Step 1 — Resend domain
 
-> We use a **subdomain** (`send.mbstorage.co.uk`) for sending. This keeps your
-> **existing inbox on `mbstorage.co.uk` untouched** *and* stays clear of your
-> Mailgun/`staging.` setup — all the records below live on the `send.` subdomain
-> only. (Pick any label you like — `send` or `mail` — just keep it consistent.)
+The **`mbstorage.co.uk`** domain is already added to Resend, so we send directly
+from it — the sender is **`quotes@mbstorage.co.uk`**.
 
-1. Sign up at **https://resend.com** (free tier, no card needed).
-2. **Domains → Add Domain** → enter **`send.mbstorage.co.uk`**.
-3. Resend shows a set of **DNS records** — all on the `send.` subdomain. These must
-   be added to the `mbstorage.co.uk` DNS by whoever manages it. Copy the values
-   **exactly** from the Resend dashboard — they're unique to your domain. They look
-   like this:
-
-   | Type | Name / Host | Value | Purpose |
-   |------|-------------|-------|---------|
-   | TXT  | `send` (as shown) | `v=spf1 include:amazonses.com ~all` (as shown) | SPF |
-   | TXT  | `resend._domainkey.send` (as shown) | long DKIM key (as shown) | DKIM signing |
-   | MX   | `send` (as shown) | `feedback-smtp.<region>.amazonses.com` (as shown) | bounces (subdomain only) |
-   | TXT  | `_dmarc.send` (recommended) | `v=DMARC1; p=none;` | DMARC policy |
-
-   > ⚠️ Use the **exact** names/values Resend gives you — the table above is only
-   > the shape of what to expect. Because everything is on the `send.` subdomain,
-   > these records **do not affect your existing `mbstorage.co.uk` email** or your
-   > Mailgun `staging.` sending.
-4. Once the records are live, click **Verify** in Resend (a few minutes up to a
-   couple of hours to propagate).
+1. In **Resend → Domains**, open `mbstorage.co.uk` and check it shows **Verified**.
+   - If **Verified**: nothing more to do here. ✅
+   - If **Pending**: give your DNS manager the records Resend lists and click
+     **Verify** once they're added.
+2. **This does not affect your inbox.** Resend does *not* change the MX records that
+   deliver your mail — it adds a **DKIM** TXT record (`resend._domainkey`) and puts
+   its bounce MX/SPF on a `send.` return-path subdomain. Your existing
+   `@mbstorage.co.uk` email keeps working as normal. (It also doesn't touch your
+   Mailgun `staging.` setup.)
 
 ## Step 2 — Resend API key
 
@@ -68,7 +55,7 @@ Nothing secret lives in this repository — the API key is stored on Netlify.
    | Key | Value |
    |-----|-------|
    | `RESEND_API_KEY` | the `re_...` key from Step 2 |
-   | `MAIL_FROM` | `MB Storage <quotes@send.mbstorage.co.uk>` |
+   | `MAIL_FROM` | `MB Storage <quotes@mbstorage.co.uk>` |
    | `MAIL_TO` | `info@mbstorage.co.uk` |
    | `SITE_URL` | `https://www.mbstorage.co.uk` |
 
