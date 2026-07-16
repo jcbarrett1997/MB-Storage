@@ -1,12 +1,12 @@
 /*
- * MB Storage — instant quote handler (Netlify Function)
+ * MB Storage - instant quote handler (Netlify Function)
  *
  * Receives the quote form, calculates the price SERVER-SIDE (so pricing is
  * never exposed to the browser), then sends two emails:
  *   1. the customer's personalised quote (from a verified @mbstorage.co.uk sender)
  *   2. a notification to the MB Storage inbox
  *
- * Works with EITHER email provider — set whichever provider's variables in the
+ * Works with EITHER email provider - set whichever provider's variables in the
  * Netlify dashboard (never in the repo):
  *
  *   Mailgun:  MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_API_BASE (optional, use
@@ -100,7 +100,7 @@ function customerHtml(name, u, incVat, d) {
     '<tr><td style="height:5px;background:#00A34A"></td></tr>' +
     '<tr><td style="padding:28px">' +
       '<p style="margin:0 0 12px;font-size:16px;color:#22303a">Hi ' + esc(name) + ',</p>' +
-      '<p style="margin:0 0 20px;font-size:15px;color:#5b5648;line-height:1.6">Thank you for your enquiry — here is your instant quote from MB Storage.</p>' +
+      '<p style="margin:0 0 20px;font-size:15px;color:#5b5648;line-height:1.6">Thank you for your enquiry - here is your instant quote from MB Storage.</p>' +
       '<div style="background:#f7f6f3;border:1px solid #e4e1da;border-radius:12px;padding:18px 20px;margin-bottom:20px">' +
         '<p style="margin:0 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#008a3f;font-weight:700">Your quote</p>' +
         '<p style="margin:0 0 12px;font-size:18px;font-weight:800;color:#1E4C6B">' + esc(u.label) + '</p>' +
@@ -117,11 +117,11 @@ function customerHtml(name, u, incVat, d) {
       '<ul style="margin:0 0 20px;padding-left:18px;color:#5b5648;font-size:14px;line-height:1.7">' +
         '<li>High-quality padlock provided</li>' +
         '<li>24/7 CCTV with motion-sensing cameras</li>' +
-        '<li>Mobile phone entry &mdash; open the gates from your phone</li>' +
+        '<li>Mobile phone entry - open the gates from your phone</li>' +
         '<li>Round-the-clock support</li>' +
       '</ul>' +
       '<a href="tel:+447375355233" style="display:inline-block;background:#00A34A;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;font-size:15px">Call to book: 07375 355233</a>' +
-      '<p style="margin:22px 0 0;font-size:14px;color:#5b5648;line-height:1.6">Ready to go ahead? Just reply to this email or call us and we\'ll arrange your move-in — often the same day.</p>' +
+      '<p style="margin:22px 0 0;font-size:14px;color:#5b5648;line-height:1.6">Ready to go ahead? Just reply to this email or call us and we\'ll arrange your move-in - often the same day.</p>' +
     '</td></tr>' +
     '<tr><td style="background:#22190A;padding:18px 28px;color:#cfc9bd;font-size:12px">' +
       'MB Storage &middot; <a href="tel:+447375355233" style="color:#cfc9bd">07375 355233</a> &middot; ' +
@@ -134,7 +134,7 @@ function customerHtml(name, u, incVat, d) {
 function customerText(name, u, incVat, d) {
   var lines = [
     'Hi ' + name + ',', '',
-    'Thank you for your enquiry — here is your instant quote from MB Storage.', '',
+    'Thank you for your enquiry - here is your instant quote from MB Storage.', '',
     'YOUR QUOTE', '----------------------------------------',
     'Unit: ' + u.label,
     'Availability: ' + u.avail,
@@ -147,7 +147,7 @@ function customerText(name, u, incVat, d) {
     'INCLUDED WITH EVERY UNIT', '----------------------------------------',
     '- High-quality padlock provided',
     '- 24/7 CCTV with motion-sensing cameras',
-    '- Mobile phone entry — open the gates from your phone',
+    '- Mobile phone entry - open the gates from your phone',
     '- Round-the-clock support', '',
     'To book, reply to this email or call 07375 355233.', '',
     'Kind regards,', 'MB Storage',
@@ -159,7 +159,7 @@ function customerText(name, u, incVat, d) {
 function notifyHtml(u, d) {
   var row = function (k, v) {
     return '<tr><td style="padding:5px 12px 5px 0;color:#5b5648;font-size:14px">' + esc(k) +
-           '</td><td style="padding:5px 0;color:#22303a;font-size:14px;font-weight:600">' + esc(v || '—') + '</td></tr>';
+           '</td><td style="padding:5px 0;color:#22303a;font-size:14px;font-weight:600">' + esc(v || ' - ') + '</td></tr>';
   };
   return '<div style="font-family:Segoe UI,Arial,sans-serif;color:#22303a">' +
     '<h2 style="color:#1E4C6B">New quote / booking request</h2>' +
@@ -188,7 +188,7 @@ exports.handler = async function (event) {
   var redirect = function () { return { statusCode: 303, headers: { Location: '/thank-you.html' }, body: '' }; };
   var fail = function (code, msg) { return wantsJson ? json(code, { ok: false, error: msg }) : redirect(); };
 
-  // Honeypot — silently succeed for bots
+  // Honeypot - silently succeed for bots
   if (d._honey || d.company) return wantsJson ? json(200, { ok: true }) : redirect();
 
   var u = UNITS[d.container_size];
@@ -212,7 +212,7 @@ exports.handler = async function (event) {
     // 2) Internal notification
     await send({
       from: FROM, to: [TO], reply_to: d.email,
-      subject: 'New quote/booking request — ' + name,
+      subject: 'New quote/booking request - ' + name,
       html: notifyHtml(u, d)
     });
   } catch (err) {

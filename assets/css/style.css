@@ -148,6 +148,10 @@ details p { margin-top: .6rem; color: var(--grey); }
 .site-footer li { margin: .35rem 0; }
 .footer-logo { height: 60px; width: auto; margin-bottom: .8rem; }
 .footer-bottom { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-top: 1.4rem; font-size: .85rem; color: #948d7d; }
+.footer-hours { margin-top: 1rem; font-size: .88rem; line-height: 1.6; }
+.footer-hours strong { color: #fff; display: block; margin-bottom: .2rem; }
+.footer-hours-note { margin-top: .5rem; font-size: .82rem; color: #948d7d; line-height: 1.5; }
+.footer-hours-note strong { color: var(--green); }
 
 /* ---------- Utilities ---------- */
 .mt-1 { margin-top: 1rem; } .mt-2 { margin-top: 2rem; }

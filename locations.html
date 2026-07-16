@@ -53,14 +53,14 @@
   <section>
     <div class="container">
       <article class="card mt-1" id="batley">
-        <h2>Batley — our flagship site</h2>
+        <h2>Batley - our flagship site</h2>
         <address style="font-style:normal;color:var(--grey)">Greenhill Mills, Batley, West Yorkshire WF17 6LL</address>
         <div class="grating" aria-label="Rated 5.0 out of 5 from 22 Google reviews">
           <span class="gstars" style="--pct:100%"></span>
           <span class="grating-num">5.0</span>
           <a class="grating-count" href="https://share.google/FKLlhXwnTdkLFq2XG" target="_blank" rel="noopener">22 Google reviews</a>
         </div>
-        <p class="mt-1">Batley is the biggest of all our locations, with both <strong>containers and warehouse units</strong> to suit every storage need — from a 20ft container up to 2,700 sq ft of space. Indoor units are fitted with roller shutters for enhanced security, well lit and fully equipped with electricity. Our 2,500 sq ft warehouse also offers running water, a small kitchen area and potential office space.</p>
+        <p class="mt-1">Batley is the biggest of all our locations, with both <strong>containers and warehouse units</strong> to suit every storage need - from a 20ft container up to 2,700 sq ft of space. Indoor units are fitted with roller shutters for enhanced security, well lit and fully equipped with electricity. Our 2,500 sq ft warehouse also offers running water, a small kitchen area and potential office space.</p>
         <ul class="mt-1" style="list-style:none">
           <li>✓ Containers and indoor warehouse units</li>
           <li>✓ 24/7 motion-sensing CCTV</li>
@@ -77,7 +77,7 @@
           <span class="grating-num">5.0</span>
           <a class="grating-count" href="https://share.google/wF9zgcL8YftSkXofP" target="_blank" rel="noopener">6 Google reviews</a>
         </div>
-        <p class="mt-1">Our Liversedge site is home to <strong>50 modern 20ft containers</strong> plus 6 indoor units in various sizes — three 265 sq ft units, one 340 sq ft unit and one 200 sq ft unit. The site is fully secured with electric gates, surveillance cameras and ample lighting.</p>
+        <p class="mt-1">Our Liversedge site is home to <strong>50 modern 20ft containers</strong> plus 6 indoor units in various sizes - three 265 sq ft units, one 340 sq ft unit and one 200 sq ft unit. The site is fully secured with electric gates, surveillance cameras and ample lighting.</p>
         <ul class="mt-1" style="list-style:none">
           <li>✓ 50 modern 20ft containers</li>
           <li>✓ Electric gates &amp; ample lighting</li>
@@ -94,7 +94,7 @@
           <span class="grating-num">5.0</span>
           <a class="grating-count" href="https://share.google/XrDNTsuIEwMxSpYG8" target="_blank" rel="noopener">47 Google reviews</a>
         </div>
-        <p class="mt-1">Our Brighouse units are located just <strong>5 minutes from the town centre</strong> with easy access to the motorway — perfect for both household and business storage in Calderdale. This site is operated by our sister company, <strong>JB Storage Solutions</strong>.</p>
+        <p class="mt-1">Our Brighouse units are located just <strong>5 minutes from the town centre</strong> with easy access to the motorway - perfect for both household and business storage in Calderdale. This site is operated by our sister company, <strong>JB Storage Solutions</strong>.</p>
         <ul class="mt-1" style="list-style:none">
           <li>✓ 5 minutes from Brighouse town centre</li>
           <li>✓ Easy motorway access (M62)</li>
@@ -144,6 +144,12 @@
           <li><a href="tel:+447375355233">07375 355233</a></li>
           <li><a href="mailto:info@mbstorage.co.uk">info@mbstorage.co.uk</a></li>
         </ul>
+        <p class="footer-hours">
+          <strong>Office hours</strong>
+          Mon - Fri: 9am - 6pm<br>
+          Weekends: 10am - 6pm
+        </p>
+        <p class="footer-hours-note"><strong>24/7</strong> assistance is available by phone for urgent enquiries.</p>
       </div>
     </div>
     <div class="footer-bottom">
@@ -160,11 +166,11 @@
   var el = document.getElementById('sites-map');
   if (!el || typeof L === 'undefined') return;
 
-  // Approximate coordinates — verify pin positions and adjust [lat, lng] if needed.
+  // Approximate coordinates - verify pin positions and adjust [lat, lng] if needed.
   var sites = [
-    { name: 'MB Storage — Batley',     coords: [53.7089307269144, -1.618558535607249], url: 'https://share.google/FKLlhXwnTdkLFq2XG', rating: 5.0, reviews: 22 },
-    { name: 'MB Storage — Liversedge', coords: [53.70760098177427, -1.6827819197472276], url: 'https://share.google/wF9zgcL8YftSkXofP', rating: 5.0, reviews: 6 },
-    { name: 'JB Storage Solutions — Brighouse', coords: [53.69737596072216, -1.7719959669653829], url: 'https://share.google/XrDNTsuIEwMxSpYG8', rating: 5.0, reviews: 47 }
+    { name: 'MB Storage - Batley',     coords: [53.7089307269144, -1.618558535607249], url: 'https://share.google/FKLlhXwnTdkLFq2XG', rating: 5.0, reviews: 22 },
+    { name: 'MB Storage - Liversedge', coords: [53.70760098177427, -1.6827819197472276], url: 'https://share.google/wF9zgcL8YftSkXofP', rating: 5.0, reviews: 6 },
+    { name: 'JB Storage Solutions - Brighouse', coords: [53.69737596072216, -1.7719959669653829], url: 'https://share.google/XrDNTsuIEwMxSpYG8', rating: 5.0, reviews: 47 }
   ];
 
   var map = L.map('sites-map', { scrollWheelZoom: false });

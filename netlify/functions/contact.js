@@ -1,5 +1,5 @@
 /*
- * MB Storage — contact form handler (Netlify Function)
+ * MB Storage - contact form handler (Netlify Function)
  *
  * Sends the message to the MB Storage inbox and a branded acknowledgement to
  * the customer, both from a verified @mbstorage.co.uk sender.
@@ -77,7 +77,7 @@ function ackHtml(name, message) {
     '<tr><td style="height:5px;background:#00A34A"></td></tr>' +
     '<tr><td style="padding:28px">' +
       '<p style="margin:0 0 12px;font-size:16px;color:#22303a">Hi ' + esc(name) + ',</p>' +
-      '<p style="margin:0 0 18px;font-size:15px;color:#5b5648;line-height:1.6">Thanks for getting in touch with MB Storage — we\'ve received your message and will get back to you shortly. If it\'s urgent, just give us a call on <a href="tel:+447375355233" style="color:#008a3f">07375 355233</a>.</p>' +
+      '<p style="margin:0 0 18px;font-size:15px;color:#5b5648;line-height:1.6">Thanks for getting in touch with MB Storage - we\'ve received your message and will get back to you shortly. If it\'s urgent, just give us a call on <a href="tel:+447375355233" style="color:#008a3f">07375 355233</a>.</p>' +
       '<div style="background:#f7f6f3;border:1px solid #e4e1da;border-radius:12px;padding:16px 18px;margin-bottom:8px">' +
         '<p style="margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#008a3f;font-weight:700">Your message</p>' +
         '<p style="margin:0;font-size:14px;color:#22303a;line-height:1.6">' + nl2br(message) + '</p>' +
@@ -117,7 +117,7 @@ exports.handler = async function (event) {
     // Notify MB Storage
     await send({
       from: FROM, to: [TO], reply_to: d.email,
-      subject: 'New contact message — ' + name,
+      subject: 'New contact message - ' + name,
       html: '<div style="font-family:Segoe UI,Arial,sans-serif;color:#22303a">' +
             '<h2 style="color:#1E4C6B">New contact message</h2>' +
             '<p><strong>Name:</strong> ' + esc(name) + '<br>' +

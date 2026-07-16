@@ -1,4 +1,4 @@
-/* MB Storage — shared site JS */
+/* MB Storage - shared site JS */
 
 // Mobile navigation
 document.addEventListener('DOMContentLoaded', function () {
