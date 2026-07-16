@@ -1,13 +1,13 @@
 # Instant quote emails — setup guide
 
 The quote form emails each customer their price **from `@mbstorage.co.uk`** using
-**Resend** (email delivery) + a **Netlify serverless function** (which calculates
+**Mailgun** (email delivery) + a **Netlify serverless function** (which calculates
 the price server-side, so prices are never exposed in the website code).
 
-Resend is used here because your Mailgun account is dedicated to
-`staging.mbstorage.co.uk` (which sends real mail) — a separate Resend account keeps
-the two completely independent, and Resend's free tier suits this volume with no
-card required.
+> The functions are **provider-agnostic** — they work with **Mailgun _or_ Resend**
+> depending on which environment variables you set in Netlify. Set the Mailgun
+> variables (below) to use Mailgun, or set `RESEND_API_KEY` instead to use Resend.
+> No code change either way.
 
 Nothing secret lives in this repository — the API key is stored on Netlify.
 
@@ -17,32 +17,35 @@ Nothing secret lives in this repository — the API key is stored on Netlify.
 
 1. Customer submits the quote form → posts to `/.netlify/functions/quote`.
 2. The function (`netlify/functions/quote.js`) works out the price, then sends:
-   - a **branded HTML quote** to the customer (from `quotes@mbstorage.co.uk`),
+   - a **branded HTML quote** to the customer (from `quotes@staging.mbstorage.co.uk`),
    - a **notification** to `info@mbstorage.co.uk`.
 3. Customer lands on `thank-you.html`.
 
 ---
 
-## Step 1 — Resend domain
+## Step 1 — Mailgun sending domain
 
-The **`mbstorage.co.uk`** domain is already added to Resend, so we send directly
-from it — the sender is **`quotes@mbstorage.co.uk`**.
+You already have a Mailgun sending domain (`staging.mbstorage.co.uk`), which today
+only sends your **old** website's contact-form emails. Once this new site replaces
+the old one, that usage stops — so Mailgun's single free-plan domain can serve the
+new site.
 
-1. In **Resend → Domains**, open `mbstorage.co.uk` and check it shows **Verified**.
-   - If **Verified**: nothing more to do here. ✅
-   - If **Pending**: give your DNS manager the records Resend lists and click
-     **Verify** once they're added.
-2. **This does not affect your inbox.** Resend does *not* change the MX records that
-   deliver your mail — it adds a **DKIM** TXT record (`resend._domainkey`) and puts
-   its bounce MX/SPF on a `send.` return-path subdomain. Your existing
-   `@mbstorage.co.uk` email keeps working as normal. (It also doesn't touch your
-   Mailgun `staging.` setup.)
+- **To test right now:** you can use the existing **`staging.mbstorage.co.uk`**
+  domain as-is (it's already verified). The only downside is the customer sees the
+  sender as `quotes@staging.mbstorage.co.uk`, which reads as a test address.
+- **For go-live (cleaner sender):** once the old site is retired, in Mailgun delete
+  `staging.mbstorage.co.uk` and **Add New Domain → `mg.mbstorage.co.uk`**, add the
+  DNS records it lists (all on the `mg.` subdomain, so your inbox is untouched),
+  verify, and update `MAILGUN_DOMAIN` + `MAIL_FROM` (below). Sender becomes
+  `quotes@mg.mbstorage.co.uk`.
 
-## Step 2 — Resend API key
+> Whichever domain you use, set `MAILGUN_DOMAIN` and `MAIL_FROM` to match it.
 
-1. In Resend → **API Keys → Create API Key** (Sending access is enough).
-2. Copy it (starts with `re_...`). You'll paste it into Netlify next — **do not**
-   put it in the repository.
+## Step 2 — Mailgun API key + region
+
+1. In Mailgun → **API keys** → copy your **Sending API key**.
+2. Note your **region** (US or EU) — it decides `MAILGUN_API_BASE` below.
+3. You'll paste the key into Netlify next — **do not** put it in the repository.
 
 ## Step 3 — Netlify (hosts the site + the function)
 
@@ -54,13 +57,15 @@ from it — the sender is **`quotes@mbstorage.co.uk`**.
 
    | Key | Value |
    |-----|-------|
-   | `RESEND_API_KEY` | the `re_...` key from Step 2 |
-   | `MAIL_FROM` | `MB Storage <quotes@mbstorage.co.uk>` |
+   | `MAILGUN_API_KEY` | the Sending API key from Step 2 |
+   | `MAILGUN_DOMAIN` | `staging.mbstorage.co.uk` (for now) — later `mg.mbstorage.co.uk` |
+   | `MAILGUN_API_BASE` | `https://api.eu.mailgun.net` **(only if your region is EU)** — otherwise omit |
+   | `MAIL_FROM` | `MB Storage <quotes@staging.mbstorage.co.uk>` — later `…@mg.mbstorage.co.uk` |
    | `MAIL_TO` | `info@mbstorage.co.uk` |
-   | `SITE_URL` | `https://www.mbstorage.co.uk` |
+   | `SITE_URL` | `https://mbstorage.netlify.app` (while testing) — later `https://www.mbstorage.co.uk` |
 
 3. **Deploy**. Your site goes live on a `*.netlify.app` URL immediately, and the
-   quote form works as soon as the Resend domain is verified.
+   quote form works as soon as your Mailgun domain is verified.
 
 ## Step 4 — Point mbstorage.co.uk at Netlify (when ready to go live)
 
@@ -80,7 +85,7 @@ Hand those to your DNS manager. Netlify then issues a free HTTPS certificate.
 - On the deployed Netlify URL, submit the quote form with your own email.
 - You should receive the branded quote; `info@mbstorage.co.uk` gets the enquiry.
 - If it fails, check **Netlify → Functions → quote → logs**. The usual cause is the
-  Resend domain not being verified yet, or a missing `RESEND_API_KEY`.
+  Mailgun domain not being verified, or missing `MAILGUN_API_KEY` / `MAILGUN_DOMAIN`.
 
 ## Changing prices later
 
