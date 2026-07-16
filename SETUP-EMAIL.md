@@ -18,27 +18,31 @@ Nothing secret lives in this repository — the API key is stored on Netlify.
 
 ---
 
-## Step 1 — Mailgun account + verify the domain
+## Step 1 — Mailgun account + verify the sending subdomain
+
+> We use a **subdomain** (`mg.mbstorage.co.uk`) for sending. This is Mailgun's
+> recommended setup and, crucially, it keeps your **existing inbox on
+> `mbstorage.co.uk` completely untouched** — all the records below live on the
+> `mg.` subdomain only.
 
 1. Sign up at **https://mailgun.com**. Choose the **EU region** if offered (you're
    UK-based) — just note which region you pick, it matters in Step 3.
-2. **Sending → Domains → Add New Domain** → enter **`mbstorage.co.uk`**
-   (the root domain, so emails come from `quotes@mbstorage.co.uk`).
-3. Mailgun shows a set of **DNS records**. These must be added to the
-   `mbstorage.co.uk` DNS by whoever manages it. Copy the values **exactly** from
-   the Mailgun dashboard — they're unique to your domain. They look like this:
+2. **Sending → Domains → Add New Domain** → enter **`mg.mbstorage.co.uk`**.
+3. Mailgun shows a set of **DNS records** — all on the `mg.` subdomain. These must
+   be added to the `mbstorage.co.uk` DNS by whoever manages it. Copy the values
+   **exactly** from the Mailgun dashboard — they're unique to your domain. They
+   look like this:
 
    | Type | Name / Host | Value | Purpose |
    |------|-------------|-------|---------|
-   | TXT  | `mbstorage.co.uk` (as shown) | `v=spf1 include:mailgun.org ~all` (as shown) | SPF |
-   | TXT  | `k1._domainkey` (as shown) | long DKIM key (as shown) | DKIM signing |
-   | MX   | `mbstorage.co.uk` | `mxa.mailgun.org` / `mxb.mailgun.org` (as shown) | receiving/bounces |
-   | CNAME | `email` (as shown) | `mailgun.org` (as shown) | open/click tracking |
+   | TXT  | `mg.mbstorage.co.uk` (as shown) | `v=spf1 include:mailgun.org ~all` (as shown) | SPF |
+   | TXT  | `k1._domainkey.mg` (as shown) | long DKIM key (as shown) | DKIM signing |
+   | MX   | `mg.mbstorage.co.uk` | `mxa.mailgun.org` / `mxb.mailgun.org` (as shown) | bounces (subdomain only) |
+   | CNAME | `email.mg` (as shown) | `mailgun.org` (as shown) | open/click tracking |
 
    > ⚠️ Use the **exact** names/values Mailgun gives you — the table above is only
-   > the shape of what to expect. Send those rows to your DNS manager.
-   > Note: if you already receive email on `mbstorage.co.uk`, tell me — we may skip
-   > Mailgun's MX records so it doesn't affect your existing mail.
+   > the shape of what to expect. Because everything is on the `mg.` subdomain,
+   > these records **do not affect your existing `mbstorage.co.uk` email**.
 4. Once the records are live, click **Verify DNS Settings** in Mailgun (can take a
    few minutes up to a couple of hours to propagate).
 
@@ -58,9 +62,9 @@ Nothing secret lives in this repository — the API key is stored on Netlify.
    | Key | Value |
    |-----|-------|
    | `MAILGUN_API_KEY` | the Sending API key from Step 2 |
-   | `MAILGUN_DOMAIN` | `mbstorage.co.uk` |
+   | `MAILGUN_DOMAIN` | `mg.mbstorage.co.uk` |
    | `MAILGUN_API_BASE` | `https://api.eu.mailgun.net` **(only if you chose the EU region)** — otherwise omit it |
-   | `MAIL_FROM` | `MB Storage <quotes@mbstorage.co.uk>` |
+   | `MAIL_FROM` | `MB Storage <quotes@mg.mbstorage.co.uk>` |
    | `MAIL_TO` | `info@mbstorage.co.uk` |
    | `SITE_URL` | `https://www.mbstorage.co.uk` |
 
