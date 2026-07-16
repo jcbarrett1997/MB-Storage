@@ -71,8 +71,8 @@ function ackHtml(name, message) {
   '<div style="background:#f2f5f8;padding:24px 0;font-family:Segoe UI,Arial,sans-serif">' +
   '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">' +
   '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e4e1da">' +
-    '<tr><td style="background:#1E4C6B;padding:22px 28px">' +
-      '<img src="' + SITE + '/assets/img/logo-landscape@4x.png" alt="MB Storage" height="40" style="height:40px;display:block">' +
+    '<tr><td style="background:#ffffff;padding:22px 28px">' +
+      '<img src="' + SITE + '/assets/img/logo-landscape@4x.png" alt="MB Storage" height="44" style="height:44px;display:block">' +
     '</td></tr>' +
     '<tr><td style="height:5px;background:#00A34A"></td></tr>' +
     '<tr><td style="padding:28px">' +
