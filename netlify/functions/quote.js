@@ -16,6 +16,13 @@
  *   Shared:   MAIL_FROM  e.g. "MB Storage <quotes@mbstorage.co.uk>"
  *             MAIL_TO    where enquiries are sent, e.g. "info@mbstorage.co.uk"
  *             SITE_URL   e.g. "https://www.mbstorage.co.uk" (used for the logo)
+ *
+ * Marketing (optional): when the customer ticks the opt-in box, their details
+ * are added to a MailerLite group. This is best-effort - if it is not
+ * configured or fails, the quote email is still sent as normal.
+ *
+ *   MailerLite:  MAILERLITE_API_KEY   (from MailerLite: Integrations > API)
+ *                MAILERLITE_GROUP_ID  the group ("Website enquiries") to add to
  */
 
 var VAT_RATE = 0.20;
@@ -99,6 +106,40 @@ function makeSender() {
     if (!r.ok) throw new Error('Mailgun ' + r.status + ': ' + (await r.text()));
     return r.json();
   };
+}
+
+/* Add a consenting customer to the MailerLite marketing group.
+   Best-effort: returns false (never throws) so a marketing failure can never
+   stop the customer receiving their quote. Only runs when the customer ticked
+   the opt-in box AND MailerLite is configured. */
+async function subscribeToMailerLite(d) {
+  var optedIn = d.marketing_opt_in === 'yes' || d.marketing_opt_in === 'on' ||
+                d.marketing_opt_in === true || d.marketing_opt_in === '1';
+  if (!optedIn) return false;
+  var key = process.env.MAILERLITE_API_KEY;
+  var group = process.env.MAILERLITE_GROUP_ID;
+  if (!key) return false;
+
+  var body = { email: String(d.email).trim(), fields: {} };
+  if (d.name) body.fields.name = String(d.name).trim();
+  if (group) body.groups = [String(group)];
+
+  try {
+    var r = await fetch('https://connect.mailerlite.com/api/subscribers', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + key,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) { console.error('MailerLite ' + r.status + ': ' + (await r.text())); return false; }
+    return true;
+  } catch (err) {
+    console.error('MailerLite subscribe failed:', err);
+    return false;
+  }
 }
 
 function customerHtml(name, u, incVat, d) {
@@ -219,6 +260,7 @@ function notifyHtml(u, d) {
       row('Preferred site', d.preferred_site) +
       row('Move-in date', d.move_in_date) +
       row('Storing', d.storing) +
+      row('Marketing opt-in', (d.marketing_opt_in === 'yes' || d.marketing_opt_in === 'on') ? 'Yes - added to mailing list' : 'No') +
     '</table></div>';
 }
 
@@ -267,6 +309,9 @@ exports.handler = async function (event) {
     console.error(err);
     return fail(502, 'Could not send email. Please try again.');
   }
+
+  // 3) Marketing sign-up (best-effort - never blocks the quote above)
+  try { await subscribeToMailerLite(d); } catch (e) { console.error(e); }
 
   return wantsJson ? json(200, { ok: true }) : redirect();
 };
