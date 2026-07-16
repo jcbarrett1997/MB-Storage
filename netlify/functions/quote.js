@@ -204,8 +204,11 @@ function customerHtml(name, u, incVat, d) {
         '<li>Mobile phone entry - open the gates from your phone</li>' +
         '<li>Round-the-clock support</li>' +
       '</ul>' +
-      '<a href="tel:+447375355233" style="display:inline-block;background:#00A34A;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;font-size:15px">Call to book: 07375 355233</a>' +
-      '<p style="margin:22px 0 0;font-size:14px;color:#5b5648;line-height:1.6">Spaces like this don\'t hang around long. Reply to this email or give us a call and we\'ll get you moved in - often the same day.</p>' +
+      '<table role="presentation" cellpadding="0" cellspacing="0"><tr>' +
+        '<td style="padding:0 10px 10px 0"><a href="tel:+447375355233" style="display:inline-block;background:#00A34A;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;font-size:15px">Call to book: 07375 355233</a></td>' +
+        '<td style="padding:0 0 10px 0"><a href="https://wa.me/447375355233?text=' + encodeURIComponent("Hi MB Storage, I've just received my quote and I'd like to go ahead.") + '" style="display:inline-block;background:#25D366;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;font-size:15px">WhatsApp us</a></td>' +
+      '</tr></table>' +
+      '<p style="margin:12px 0 0;font-size:14px;color:#5b5648;line-height:1.6">Spaces like this don\'t hang around long. Reply to this email, WhatsApp us or give us a call and we\'ll get you moved in - often the same day.</p>' +
     '</td></tr>' +
     '<tr><td style="background:#22190A;padding:18px 28px;color:#cfc9bd;font-size:12px">' +
       'MB Storage &middot; <a href="tel:+447375355233" style="color:#cfc9bd">07375 355233</a> &middot; ' +
@@ -245,9 +248,9 @@ function customerText(name, u, incVat, d) {
     '- 24/7 CCTV with motion-sensing cameras',
     '- Mobile phone entry - open the gates from your phone',
     '- Round-the-clock support', '',
-    "Spaces like this don't hang around long. Reply to this email or call 07375 355233 and we'll get you moved in - often the same day.", '',
+    "Spaces like this don't hang around long. Reply to this email, WhatsApp us on 07375 355233 (https://wa.me/447375355233) or give us a call and we'll get you moved in - often the same day.", '',
     'Kind regards,', 'MB Storage',
-    '07375 355233 | info@mbstorage.co.uk | mbstorage.co.uk'
+    '07375 355233 | WhatsApp: wa.me/447375355233 | info@mbstorage.co.uk | mbstorage.co.uk'
   ]);
   return lines.filter(function (l) { return l !== null; }).join('\n');
 }
