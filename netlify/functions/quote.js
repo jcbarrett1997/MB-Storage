@@ -28,7 +28,26 @@ var FROM = process.env.MAIL_FROM || 'MB Storage <quotes@mbstorage.co.uk>';
 var TO   = process.env.MAIL_TO   || 'info@mbstorage.co.uk';
 var SITE = (process.env.SITE_URL || 'https://www.mbstorage.co.uk').replace(/\/$/, '');
 
+var PREPAY_OFFERS = [
+  { months: 6, discount: 0.05, label: '6 months upfront' },
+  { months: 12, discount: 0.10, label: '12 months upfront' }
+];
+
 function money(n) { return '£' + n.toFixed(2); }
+
+function prepayOffers(u) {
+  return PREPAY_OFFERS.map(function (o) {
+    var fullExVat = u.pcmExVat * o.months;
+    var payExVat = fullExVat * (1 - o.discount);
+    var payIncVat = payExVat * (1 + VAT_RATE);
+    var saveExVat = fullExVat - payExVat;
+    var saveIncVat = saveExVat * (1 + VAT_RATE);
+    return {
+      months: o.months, label: o.label, pct: Math.round(o.discount * 100),
+      payExVat: payExVat, payIncVat: payIncVat, saveExVat: saveExVat, saveIncVat: saveIncVat
+    };
+  });
+}
 function esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -90,6 +109,22 @@ function customerHtml(name, u, incVat, d) {
   var extra = '';
   if (d.preferred_site) extra += row('Preferred site', d.preferred_site);
   if (d.move_in_date)   extra += row('Preferred move-in date', d.move_in_date);
+
+  var offers = prepayOffers(u);
+  var offerCards = offers.map(function (o, i) {
+    var best = i === offers.length - 1;
+    return '' +
+      '<td width="50%" valign="top" style="padding:' + (i === 0 ? '0 8px 0 0' : '0 0 0 8px') + '">' +
+        '<div style="border:2px solid ' + (best ? '#00A34A' : '#e4e1da') + ';border-radius:12px;padding:16px 14px;position:relative;' + (best ? 'background:#f0faf4' : '') + '">' +
+          (best ? '<div style="position:absolute;top:-11px;left:14px;background:#00A34A;color:#fff;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:999px">Best value</div>' : '') +
+          '<p style="margin:6px 0 2px;font-size:13px;color:#5b5648;font-weight:600">' + esc(o.label) + '</p>' +
+          '<p style="margin:0 0 6px;font-size:22px;font-weight:800;color:#1E4C6B">Save ' + o.pct + '%</p>' +
+          '<p style="margin:0 0 2px;font-size:13px;color:#22303a">Pay ' + money(o.payIncVat) + ' <span style="color:#5b5648;font-weight:400">(inc. VAT)</span></p>' +
+          '<p style="margin:0;font-size:12px;color:#008a3f;font-weight:700">You save ' + money(o.saveIncVat) + '</p>' +
+        '</div>' +
+      '</td>';
+  }).join('');
+
   return '' +
   '<div style="background:#f2f5f8;padding:24px 0;font-family:Segoe UI,Arial,sans-serif">' +
   '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">' +
@@ -100,7 +135,7 @@ function customerHtml(name, u, incVat, d) {
     '<tr><td style="height:5px;background:#00A34A"></td></tr>' +
     '<tr><td style="padding:28px">' +
       '<p style="margin:0 0 12px;font-size:16px;color:#22303a">Hi ' + esc(name) + ',</p>' +
-      '<p style="margin:0 0 20px;font-size:15px;color:#5b5648;line-height:1.6">Thank you for your enquiry - here is your instant quote from MB Storage.</p>' +
+      '<p style="margin:0 0 20px;font-size:15px;color:#5b5648;line-height:1.6">Great news - we have space ready for you. Here is your personalised quote, straight away and with no obligation.</p>' +
       '<div style="background:#f7f6f3;border:1px solid #e4e1da;border-radius:12px;padding:18px 20px;margin-bottom:20px">' +
         '<p style="margin:0 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#008a3f;font-weight:700">Your quote</p>' +
         '<p style="margin:0 0 12px;font-size:18px;font-weight:800;color:#1E4C6B">' + esc(u.label) + '</p>' +
@@ -113,6 +148,9 @@ function customerHtml(name, u, incVat, d) {
         '</table>' +
         '<p style="margin:12px 0 0;font-size:13px;color:#5b5648;line-height:1.5">Your deposit is refunded in full when you leave, provided the unit is left as it was found.</p>' +
       '</div>' +
+      '<p style="margin:0 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#1E4C6B;font-weight:700">Pay upfront and save</p>' +
+      '<p style="margin:0 0 12px;font-size:14px;color:#5b5648;line-height:1.5">Lock in your rate and skip the monthly admin - the longer you pay upfront, the more you save.</p>' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:22px"><tr>' + offerCards + '</tr></table>' +
       '<p style="margin:0 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#1E4C6B;font-weight:700">Included with every unit</p>' +
       '<ul style="margin:0 0 20px;padding-left:18px;color:#5b5648;font-size:14px;line-height:1.7">' +
         '<li>High-quality padlock provided</li>' +
@@ -121,7 +159,7 @@ function customerHtml(name, u, incVat, d) {
         '<li>Round-the-clock support</li>' +
       '</ul>' +
       '<a href="tel:+447375355233" style="display:inline-block;background:#00A34A;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;font-size:15px">Call to book: 07375 355233</a>' +
-      '<p style="margin:22px 0 0;font-size:14px;color:#5b5648;line-height:1.6">Ready to go ahead? Just reply to this email or call us and we\'ll arrange your move-in - often the same day.</p>' +
+      '<p style="margin:22px 0 0;font-size:14px;color:#5b5648;line-height:1.6">Spaces like this don\'t hang around long. Reply to this email or give us a call and we\'ll get you moved in - often the same day.</p>' +
     '</td></tr>' +
     '<tr><td style="background:#22190A;padding:18px 28px;color:#cfc9bd;font-size:12px">' +
       'MB Storage &middot; <a href="tel:+447375355233" style="color:#cfc9bd">07375 355233</a> &middot; ' +
@@ -132,9 +170,15 @@ function customerHtml(name, u, incVat, d) {
 }
 
 function customerText(name, u, incVat, d) {
+  var offers = prepayOffers(u);
+  var offerLines = [];
+  offers.forEach(function (o) {
+    offerLines.push(o.label + ': SAVE ' + o.pct + '% - pay ' + money(o.payIncVat) + ' (inc. VAT), you save ' + money(o.saveIncVat));
+  });
+
   var lines = [
     'Hi ' + name + ',', '',
-    'Thank you for your enquiry - here is your instant quote from MB Storage.', '',
+    'Great news - we have space ready for you. Here is your personalised quote, straight away and with no obligation.', '',
     'YOUR QUOTE', '----------------------------------------',
     'Unit: ' + u.label,
     'Availability: ' + u.avail,
@@ -144,15 +188,18 @@ function customerText(name, u, incVat, d) {
     '(' + money(incVat) + ' including VAT)', '',
     'Refundable deposit: ' + money(u.deposit),
     'Your deposit is refunded in full when you leave, provided the unit is left as it was found.', '',
-    'INCLUDED WITH EVERY UNIT', '----------------------------------------',
+    'PAY UPFRONT AND SAVE', '----------------------------------------',
+    'Lock in your rate and skip the monthly admin - the longer you pay upfront, the more you save.',
+  ].concat(offerLines).concat([
+    '', 'INCLUDED WITH EVERY UNIT', '----------------------------------------',
     '- High-quality padlock provided',
     '- 24/7 CCTV with motion-sensing cameras',
     '- Mobile phone entry - open the gates from your phone',
     '- Round-the-clock support', '',
-    'To book, reply to this email or call 07375 355233.', '',
+    "Spaces like this don't hang around long. Reply to this email or call 07375 355233 and we'll get you moved in - often the same day.", '',
     'Kind regards,', 'MB Storage',
     '07375 355233 | info@mbstorage.co.uk | mbstorage.co.uk'
-  ];
+  ]);
   return lines.filter(function (l) { return l !== null; }).join('\n');
 }
 
@@ -205,7 +252,7 @@ exports.handler = async function (event) {
     // 1) Customer quote
     await send({
       from: FROM, to: [d.email], reply_to: TO,
-      subject: 'Your MB Storage quote',
+      subject: 'Your MB Storage quote - save up to 10% paying upfront',
       html: customerHtml(name, u, incVat, d),
       text: customerText(name, u, incVat, d)
     });
