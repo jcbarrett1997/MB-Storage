@@ -107,6 +107,7 @@ exports.handler = async function (event) {
 
   if (d._honey || d.company) return wantsJson ? json(200, { ok: true }) : redirect();
   if (!d.email || String(d.email).indexOf('@') === -1) return fail(400, 'A valid email is required.');
+  if (!d.phone || !String(d.phone).trim()) return fail(400, 'A phone number is required.');
   if (!d.message || !String(d.message).trim()) return fail(400, 'Please enter a message.');
   if (!process.env.RESEND_API_KEY && !process.env.MAILGUN_API_KEY) return fail(500, 'Email service not configured.');
 
@@ -121,7 +122,8 @@ exports.handler = async function (event) {
       html: '<div style="font-family:Segoe UI,Arial,sans-serif;color:#22303a">' +
             '<h2 style="color:#1E4C6B">New contact message</h2>' +
             '<p><strong>Name:</strong> ' + esc(name) + '<br>' +
-            '<strong>Email:</strong> ' + esc(d.email) + '</p>' +
+            '<strong>Email:</strong> ' + esc(d.email) + '<br>' +
+            '<strong>Phone:</strong> ' + esc(d.phone) + '</p>' +
             '<p><strong>Message:</strong><br>' + nl2br(d.message) + '</p></div>'
     });
     // Acknowledge the customer

@@ -20,8 +20,8 @@
 
 var VAT_RATE = 0.20;
 var UNITS = {
-  '20ft': { label: '20ft × 8ft storage container', pcmExVat: 160.00, deposit: 150.00, avail: 'Available at all our sites' },
-  '8ft':  { label: '8ft × 6ft 6in storage container', pcmExVat: 82.50, deposit: 75.00, avail: 'Available at our Batley site only' }
+  '20ft': { label: '20ft × 8ft storage container', sqft: '≈160 sq ft', pcmExVat: 160.00, deposit: 150.00, avail: 'Available at all our sites' },
+  '8ft':  { label: '8ft × 6ft 6in storage container', sqft: '≈52 sq ft', pcmExVat: 82.50, deposit: 75.00, avail: 'Available at our Batley site only' }
 };
 
 var FROM = process.env.MAIL_FROM || 'MB Storage <quotes@mbstorage.co.uk>';
@@ -138,7 +138,8 @@ function customerHtml(name, u, incVat, d) {
       '<p style="margin:0 0 20px;font-size:15px;color:#5b5648;line-height:1.6">Great news - we have space ready for you. Here is your personalised quote, straight away and with no obligation.</p>' +
       '<div style="background:#f7f6f3;border:1px solid #e4e1da;border-radius:12px;padding:18px 20px;margin-bottom:20px">' +
         '<p style="margin:0 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#008a3f;font-weight:700">Your quote</p>' +
-        '<p style="margin:0 0 12px;font-size:18px;font-weight:800;color:#1E4C6B">' + esc(u.label) + '</p>' +
+        '<p style="margin:0 0 2px;font-size:18px;font-weight:800;color:#1E4C6B">' + esc(u.label) + '</p>' +
+        '<p style="margin:0 0 12px;font-size:13px;color:#5b5648;font-weight:600">' + esc(u.sqft) + ' of floor space</p>' +
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">' +
           row('Availability', u.avail) + extra +
           '<tr><td colspan="2" style="border-top:1px solid #e4e1da;padding-top:10px"></td></tr>' +
@@ -181,6 +182,7 @@ function customerText(name, u, incVat, d) {
     'Great news - we have space ready for you. Here is your personalised quote, straight away and with no obligation.', '',
     'YOUR QUOTE', '----------------------------------------',
     'Unit: ' + u.label,
+    'Size: ' + u.sqft + ' of floor space',
     'Availability: ' + u.avail,
     (d.preferred_site ? 'Preferred site: ' + d.preferred_site : null),
     (d.move_in_date ? 'Preferred move-in date: ' + d.move_in_date : null), '',
@@ -212,12 +214,11 @@ function notifyHtml(u, d) {
     '<h2 style="color:#1E4C6B">New quote / booking request</h2>' +
     '<table role="presentation" cellpadding="0" cellspacing="0">' +
       row('Name', d.name) + row('Email', d.email) + row('Phone', d.phone) +
-      row('Container', u.label) +
+      row('Container', u.label + ' (' + u.sqft + ')') +
       row('Quote', money(u.pcmExVat) + ' + VAT pcm, deposit ' + money(u.deposit)) +
       row('Preferred site', d.preferred_site) +
       row('Move-in date', d.move_in_date) +
       row('Storing', d.storing) +
-      row('Wants to book', d.booking_request) +
     '</table></div>';
 }
 

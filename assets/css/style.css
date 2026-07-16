@@ -86,6 +86,8 @@ h3 { color: var(--navy); }
 .unit-body li { padding-left: 1.5em; position: relative; margin: .3rem 0; }
 .unit-body li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 800; }
 .badge { display: inline-block; background: var(--green-tint); color: var(--green-dark); font-weight: 700; font-size: .78rem; border-radius: 999px; padding: .25rem .8rem; letter-spacing: .04em; text-transform: uppercase; width: fit-content; }
+.unit-sqft { color: var(--grey); font-weight: 600; font-size: .95rem; margin-top: -.3rem; }
+.unit-sqft strong { color: var(--navy); }
 .price-hidden { background: var(--navy-tint); border-radius: 10px; padding: .9rem 1.1rem; color: var(--navy); font-size: .95rem; }
 .price-hidden strong { color: var(--green-dark); }
 .unit-body .btn { margin-top: auto; }
