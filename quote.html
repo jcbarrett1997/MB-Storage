@@ -76,11 +76,12 @@
             </select>
           </div>
           <div>
-            <label for="q-site">Preferred site</label>
-            <select id="q-site" name="preferred_site">
-              <option value="" selected>No preference</option>
+            <label for="q-site">Preferred site *</label>
+            <select id="q-site" name="preferred_site" required>
+              <option value="" disabled selected>Choose a site…</option>
               <option>Batley</option>
               <option>Liversedge</option>
+              <option>Either is fine</option>
             </select>
             <p class="hint">Looking for Brighouse? That's our sister company - <a href="https://www.jbstoragesolutions.co.uk" target="_blank" rel="noopener">JB Storage Solutions</a>.</p>
           </div>
@@ -89,8 +90,8 @@
             <input id="q-date" type="date" name="move_in_date">
           </div>
           <div class="full">
-            <label for="q-storing">What will you be storing?</label>
-            <textarea id="q-storing" name="storing" rows="3" placeholder="e.g. household furniture during a move, business stock, tools…"></textarea>
+            <label for="q-storing">What will you be storing? *</label>
+            <textarea id="q-storing" name="storing" rows="3" required placeholder="e.g. household furniture during a move, business stock, tools…"></textarea>
           </div>
           <div class="full">
             <div class="consent-check">
