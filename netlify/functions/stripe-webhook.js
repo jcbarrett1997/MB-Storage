@@ -128,7 +128,7 @@ function customerHtml(name, m, amount) {
         '<li>We\'ll call or email to confirm your move-in date and unit</li>' +
         '<li>You\'ll get your high-quality padlock and mobile phone gate access</li>' +
         '<li>Move in - often the same day</li>' +
-        '<li>Nothing more to pay until the 1st' + (m.payment_preference && m.payment_preference !== 'Monthly' ? ' - and we\'ll be in touch about your ' + esc(m.payment_preference) + ' saving' : '') + '</li>' +
+        '<li>Nothing more to pay until the 1st' + (m.payment_preference && m.payment_preference !== 'Monthly' ? ' - and we\'ll be in touch as soon as possible with your discounted ' + esc(m.payment_preference) + ' invoice' : '') + '</li>' +
       '</ul>' +
       '<a href="tel:+447375355233" style="display:inline-block;background:#00A34A;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;font-size:15px">Questions? Call 07375 355233</a>' +
     '</td></tr>' +
@@ -148,7 +148,7 @@ function customerText(name, m, amount) {
     'Unit: ' + (m.unitLabel || m.container_size),
     'Site: ' + (m.site || '-'),
     (m.move_in_date ? 'Move-in date: ' + m.move_in_date : null),
-    (m.payment_preference && m.payment_preference !== 'Monthly' ? 'Payment preference: ' + m.payment_preference + ' (we\'ll be in touch about your saving)' : null),
+    (m.payment_preference && m.payment_preference !== 'Monthly' ? 'Payment preference: ' + m.payment_preference + ' (we\'ll be in touch as soon as possible with your discounted invoice)' : null),
     (m.deposit_paid ? 'Refundable deposit: ' + m.deposit_paid : null),
     (m.rent_paid ? 'First rent payment (' + (m.rent_period || 'to month end') + '): ' + m.rent_paid : null),
     'Total paid: ' + amount, '',
