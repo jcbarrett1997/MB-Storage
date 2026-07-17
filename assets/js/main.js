@@ -61,15 +61,15 @@ function initBookingForm() {
     if (!availability || !availHint) return;
     var site = siteSel && siteSel.value;
     var size = sizeSel && sizeSel.value;
-    if (!site || !size) { availHint.textContent = ''; return; }
+    if (!site || !size) { availHint.innerHTML = ''; return; }
     var free = (availability[site] || {})[size];
-    if (free === undefined) { availHint.textContent = ''; return; }
+    if (free === undefined) { availHint.innerHTML = ''; return; }
     if (free <= 0) {
-      availHint.innerHTML = '<strong style="color:#b3261e">Sorry - currently full at this site.</strong> Call <a href="tel:+447375355233">07375 355233</a> to join the waiting list.';
+      availHint.innerHTML = '<span class="avail-badge full">⛔ None left to book online at this site - call <a href="tel:+447375355233">07375 355233</a> to join the waiting list.</span>';
     } else if (free <= 3) {
-      availHint.innerHTML = '<strong style="color:#b3261e">Only ' + free + ' left</strong> at this site - book now to secure yours.';
+      availHint.innerHTML = '<span class="avail-badge low">⚠️ Only ' + free + (free === 1 ? ' unit' : ' units') + ' left to book online at this site - book now to secure yours.</span>';
     } else {
-      availHint.innerHTML = '<strong style="color:#008a3f">Available now</strong> at this site.';
+      availHint.innerHTML = '<span class="avail-badge ok">✓ Available to book online now.</span>';
     }
   }
   /* 8ft containers only exist at Batley - physically prevent the
