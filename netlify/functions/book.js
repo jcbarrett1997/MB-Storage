@@ -141,7 +141,7 @@ async function handleUpfrontRequest(d, site, unit, rent) {
               rowH('Paying', d.payment_preference + ' (save ' + pct + ')') +
             '</table>' +
           '</div>' +
-          '<p style="margin:0 0 16px;font-size:13px;color:#5b5648;line-height:1.6">Your unit is secured once your invoice is paid - we\'ll move quickly so you can too. Questions in the meantime? Just reply to this email or call us.</p>' +
+          '<p style="margin:0 0 16px;font-size:13px;color:#5b5648;line-height:1.6"><strong>Please note:</strong> a booking request doesn\'t reserve your unit - units go to whoever pays first, so your unit is only secured once your invoice is paid. That\'s why we\'ll be in touch as soon as possible to get everything sorted with you. Questions in the meantime? Just reply to this email or call us.</p>' +
           '<a href="tel:+447375355233" style="display:inline-block;background:#00A34A;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;font-size:15px">Call us: 07375 355233</a>' +
         '</td></tr>' +
         '<tr><td style="background:#22190A;padding:18px 28px;color:#cfc9bd;font-size:12px">MB Storage &middot; <a href="tel:+447375355233" style="color:#cfc9bd">07375 355233</a> &middot; <a href="mailto:info@mbstorage.co.uk" style="color:#cfc9bd">info@mbstorage.co.uk</a> &middot; <a href="' + SITE + '" style="color:#cfc9bd">mbstorage.co.uk</a></td></tr>' +
@@ -155,7 +155,7 @@ async function handleUpfrontRequest(d, site, unit, rent) {
       'Site: ' + site.label,
       'Move-in date: ' + d.move_in_date,
       'Paying: ' + d.payment_preference + ' (save ' + pct + ')', '',
-      'Your unit is secured once your invoice is paid - we\'ll move quickly so you can too.', '',
+      'PLEASE NOTE: a booking request doesn\'t reserve your unit - units go to whoever pays first, so your unit is only secured once your invoice is paid. That\'s why we\'ll be in touch as soon as possible to get everything sorted with you.', '',
       'Questions? Reply to this email or call 07375 355233.', '',
       'Kind regards,', 'MB Storage',
       '07375 355233 | info@mbstorage.co.uk | mbstorage.co.uk'
