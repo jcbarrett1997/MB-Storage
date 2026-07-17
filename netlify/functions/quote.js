@@ -325,6 +325,8 @@ exports.handler = async function (event) {
   var u = UNITS[d.container_size];
   if (!u) return fail(400, 'Please choose a container size.');
   if (!d.email || String(d.email).indexOf('@') === -1) return fail(400, 'A valid email is required.');
+  if (!d.preferred_site || !String(d.preferred_site).trim()) return fail(400, 'Please choose your preferred site.');
+  if (!d.storing || !String(d.storing).trim()) return fail(400, 'Please tell us what you\'ll be storing.');
   if (!process.env.RESEND_API_KEY && !process.env.MAILGUN_API_KEY) return fail(500, 'Email service not configured.');
 
   var name = (d.name || 'there').toString().trim() || 'there';
