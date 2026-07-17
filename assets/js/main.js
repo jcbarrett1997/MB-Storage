@@ -15,7 +15,88 @@ document.addEventListener('DOMContentLoaded', function () {
   initReveal();
   initCounters();
   initWhatsAppButton();
+  initBookingForm();
 });
+
+/* ------------------------------------------------------------------
+   Online booking form (book.html).
+   Posts to /.netlify/functions/book, which re-checks availability and
+   returns a Stripe Checkout URL; the browser then redirects there to pay
+   the refundable deposit. Deposit amounts live server-side only.
+   Live availability (from /.netlify/functions/availability) is shown as
+   a hint under the size selector and full options are disabled.
+------------------------------------------------------------------- */
+function initBookingForm() {
+  var form = document.getElementById('book-form');
+  if (!form) return;
+  var status = document.getElementById('book-status');
+  var btn = form.querySelector('button[type="submit"]');
+  var siteSel = document.getElementById('b-site');
+  var sizeSel = document.getElementById('b-size');
+  var availHint = document.getElementById('b-availability');
+  var availability = null;
+
+  fetch('/.netlify/functions/availability')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data && data.configured) { availability = data.availability || {}; updateAvail(); }
+    })
+    .catch(function () { /* no availability - booking still works */ });
+
+  function updateAvail() {
+    if (!availability || !availHint) return;
+    var site = siteSel && siteSel.value;
+    var size = sizeSel && sizeSel.value;
+    if (!site || !size) { availHint.textContent = ''; return; }
+    var free = (availability[site] || {})[size];
+    if (free === undefined) { availHint.textContent = ''; return; }
+    if (free <= 0) {
+      availHint.innerHTML = '<strong style="color:#b3261e">Sorry - currently full at this site.</strong> Call <a href="tel:+447375355233">07375 355233</a> to join the waiting list.';
+    } else if (free <= 3) {
+      availHint.innerHTML = '<strong style="color:#b3261e">Only ' + free + ' left</strong> at this site - book now to secure yours.';
+    } else {
+      availHint.innerHTML = '<strong style="color:#008a3f">Available now</strong> at this site.';
+    }
+  }
+  if (siteSel) siteSel.addEventListener('change', updateAvail);
+  if (sizeSel) sizeSel.addEventListener('change', updateAvail);
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    if (availability && siteSel && sizeSel && siteSel.value && sizeSel.value) {
+      var free = (availability[siteSel.value] || {})[sizeSel.value];
+      if (free !== undefined && free <= 0) {
+        if (status) { status.className = 'status-msg err'; status.textContent = 'Sorry - that size is currently full at this site. Please call 07375 355233.'; }
+        return;
+      }
+    }
+
+    var data = {};
+    new FormData(form).forEach(function (v, k) { data[k] = v; });
+
+    if (status) { status.className = 'status-msg ok'; status.textContent = 'Taking you to secure payment…'; }
+    if (btn) { btn.disabled = true; }
+
+    fetch('/.netlify/functions/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function (r) {
+      return r.json().then(function (body) { return { ok: r.ok, body: body }; });
+    }).then(function (res) {
+      if (res.ok && res.body && res.body.url) { window.location.href = res.body.url; return; }
+      throw new Error((res.body && res.body.error) || 'Booking failed');
+    }).catch(function (err) {
+      if (status) {
+        status.className = 'status-msg err';
+        status.textContent = (err && err.message && err.message !== 'Failed to fetch') ? err.message :
+          'Sorry, something went wrong. Please call us on 07375 355233.';
+      }
+      if (btn) { btn.disabled = false; }
+    });
+  });
+}
 
 /* Floating WhatsApp click-to-chat bubble, added to every page. */
 var WHATSAPP_URL = 'https://wa.me/447375355233?text=' +
