@@ -449,6 +449,7 @@ exports.handler = async function (event) {
       sizeLabel: u.label,
       site: d.preferred_site || '',
       storing: d.storing || '',
+      move_in_date: d.move_in_date || '',
       fu2: false, fu7: false
     });
   } catch (e) { console.error('Quote log failed:', e); }

@@ -95,22 +95,38 @@ function firstName(name) {
   return String(name || '').trim().split(/\s+/)[0] || 'there';
 }
 
-function followUpEmail(q, isFinal) {
+/* kind: 'checkin' (day 2), 'final' (day 7),
+         'window' (3 days before a planned move-in - booking now open),
+         'missed' (planned move-in date passed without booking) */
+function followUpEmail(q, kind) {
   var book = bookingUrl(q);
   var btn = book
     ? '<div style="text-align:center;margin:18px 0"><a href="' + book + '" style="display:inline-block;background:#00A34A;color:#ffffff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:999px;font-size:15px">Book online now</a></div>'
     : '';
-  var lead = isFinal
-    ? 'Just one last note from us - your quote for the <strong>' + esc(q.sizeLabel || q.size + ' container') + '</strong> is still valid, but units are filling up and we\'d hate for you to miss out. If storage is still on your list, now\'s a great time.'
-    : 'A couple of days ago we sent your personalised quote for the <strong>' + esc(q.sizeLabel || q.size + ' container') + '</strong> - just checking it reached you and seeing if you have any questions. It\'s valid for 30 days, so there\'s no pressure.';
-  var close = isFinal
-    ? 'We won\'t email you about this quote again - but we\'re here whenever you\'re ready. Just reply, book online or give us a call.'
-    : 'Reply to this email with any questions at all - sizes, access, moving in - we\'re happy to help.';
+  var unitBit = '<strong>' + esc(q.sizeLabel || q.size + ' container') + '</strong>';
+  var moveBit = q.move_in_date ? '<strong>' + esc(q.move_in_date) + '</strong>' : 'your planned date';
+
+  var lead, close, subject;
+  if (kind === 'window') {
+    subject = 'Your move-in date is almost here - you can book online now';
+    lead = 'When you asked us for a quote for the ' + unitBit + ', you mentioned a move-in date of ' + moveBit + ' - that\'s just around the corner now. Online booking opens 3 days ahead, so you can secure your unit today.';
+    close = 'Any questions before then - sizes, access, what to bring - just reply or give us a call.';
+  } else if (kind === 'missed') {
+    subject = 'Did your plans change? Your MB Storage quote is still valid';
+    lead = 'Your planned move-in date (' + moveBit + ') has been and gone, and we didn\'t want to leave you hanging - your quote for the ' + unitBit + ' is still valid. If plans have shifted, no problem at all: reply with a new date and we\'ll sort it.';
+    close = 'We won\'t email you about this quote again - but we\'re here whenever you\'re ready.';
+  } else if (kind === 'final') {
+    subject = 'Last one from us - your MB Storage quote is still here';
+    lead = 'Just one last note from us - your quote for the ' + unitBit + ' is still valid, but units are filling up and we\'d hate for you to miss out. If storage is still on your list, now\'s a great time.';
+    close = 'We won\'t email you about this quote again - but we\'re here whenever you\'re ready. Just reply, book online or give us a call.';
+  } else {
+    subject = 'Still thinking it over? Your MB Storage quote is safe';
+    lead = 'A couple of days ago we sent your personalised quote for the ' + unitBit + ' - just checking it reached you and seeing if you have any questions. It\'s valid for 30 days, so there\'s no pressure.';
+    close = 'Reply to this email with any questions at all - sizes, access, moving in - we\'re happy to help.';
+  }
 
   return {
-    subject: isFinal
-      ? 'Last one from us - your MB Storage quote is still here'
-      : 'Still thinking it over? Your MB Storage quote is safe',
+    subject: subject,
     html:
       '<div style="background:#f2f5f8;padding:24px 0;font-family:Segoe UI,Arial,sans-serif">' +
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">' +
@@ -189,29 +205,44 @@ exports.handler = async function () {
     if (key.indexOf('q-') !== 0) continue;
     var q = await store.get(key, { type: 'json' });
     if (!q || !q.ts) { await store.delete(key); continue; }
-    var age = now - q.ts;
 
-    if (age > 35 * DAY) { await store.delete(key); continue; }
+    // Planners (move-in well beyond the quote) get nudges timed around
+    // their move-in date, not the quote date - no pestering people who
+    // told us they're organising ahead
+    var moveIn = null;
+    if (q.move_in_date) {
+      var mv = new Date(q.move_in_date + 'T12:00:00');
+      if (!isNaN(mv.getTime())) moveIn = mv.getTime();
+    }
+    var planner = moveIn && (moveIn - q.ts) > 5 * DAY;
+    var t1 = planner ? moveIn - 3 * DAY : q.ts + 2 * DAY;   // first nudge
+    var t2 = planner ? moveIn + 1 * DAY : q.ts + 7 * DAY;   // final nudge
+
+    // Clean up once the whole sequence is well past (whichever is later:
+    // 35 days after quoting, or 3 days after the final nudge was due)
+    if (now > Math.max(q.ts + 35 * DAY, t2 + 3 * DAY)) { await store.delete(key); continue; }
 
     // Booked since quoting? Leave them alone for good.
     if (q.email && booked[q.email] && booked[q.email] >= q.ts) { await store.delete(key); continue; }
 
     try {
-      if (age >= 7 * DAY && !q.fu7) {
+      if (now >= t2 && !q.fu7) {
         if (q.email) {
-          var e7 = followUpEmail(q, true);
+          var e7 = followUpEmail(q, planner ? 'missed' : 'final');
           await send({ from: FROM, to: [q.email], reply_to: TO, subject: e7.subject, html: e7.html, text: e7.text });
         }
         q.fu7 = true; q.fu2 = true;
         await store.setJSON(key, q);
+        q._label = planner ? 'Move-in date passed unbooked - final email sent' : 'FINAL nudge - last automatic email sent';
         nudged7.push(q);
-      } else if (age >= 2 * DAY && !q.fu2) {
+      } else if (now >= t1 && !q.fu2) {
         if (q.email) {
-          var e2 = followUpEmail(q, false);
+          var e2 = followUpEmail(q, planner ? 'window' : 'checkin');
           await send({ from: FROM, to: [q.email], reply_to: TO, subject: e2.subject, html: e2.html, text: e2.text });
         }
         q.fu2 = true;
         await store.setJSON(key, q);
+        q._label = planner ? 'Planner - move-in ' + (q.move_in_date || '') + ', booking window now open' : '';
         nudged2.push(q);
       }
     } catch (err) {
@@ -224,8 +255,8 @@ exports.handler = async function () {
       '<h2 style="color:#1E4C6B">Warm leads - quotes that haven\'t booked yet</h2>' +
       '<p style="font-size:14px;color:#5b5648">These customers were sent an automatic follow-up email today. A personal WhatsApp on top works wonders - the message is pre-written, just tap and send (edit it first if you like).</p>' +
       '<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse">' +
-      nudged2.map(function (q) { return digestRow(q, ''); }).join('') +
-      nudged7.map(function (q) { return digestRow(q, 'FINAL nudge - last automatic email sent'); }).join('') +
+      nudged2.map(function (q) { return digestRow(q, q._label || ''); }).join('') +
+      nudged7.map(function (q) { return digestRow(q, q._label || 'FINAL nudge - last automatic email sent'); }).join('') +
       '</table>' +
       '<p style="font-size:12px;color:#9a9384;margin-top:14px">Customers disappear from these digests when they book, or 35 days after their quote.</p>' +
       '</div>';
