@@ -226,11 +226,74 @@ async function recordSalesReceipt(company, opts) {
   return created;
 }
 
+/* Creates an Invoice (money still owed - used for upfront 6/12-month
+   bookings, which are paid by bank transfer rather than card) and emails
+   it to the customer via QuickBooks. Same item/VAT configuration as sales
+   receipts. Returns { invoice, emailed }. */
+async function recordInvoice(company, opts) {
+  var prefix = 'QUICKBOOKS_' + company.toUpperCase();
+  var depositItemId = process.env[prefix + '_DEPOSIT_ITEM_ID'];
+  var rentItemId = process.env[prefix + '_RENT_ITEM_ID'];
+  if (!depositItemId || !rentItemId) {
+    throw new Error('QuickBooks item IDs are not configured for ' + company + ' - see SETUP-QUICKBOOKS.md.');
+  }
+  var depositTaxCodeId = process.env[prefix + '_DEPOSIT_TAX_CODE_ID'];
+  var rentTaxCodeId = process.env[prefix + '_RENT_TAX_CODE_ID'];
+
+  var customer = await findOrCreateCustomer(company, opts);
+
+  var lines = [];
+  if (opts.depositAmount) {
+    var depositDetail = { ItemRef: { value: depositItemId }, Qty: 1, UnitPrice: opts.depositAmount };
+    if (depositTaxCodeId) depositDetail.TaxCodeRef = { value: depositTaxCodeId };
+    lines.push({
+      Amount: opts.depositAmount,
+      DetailType: 'SalesItemLineDetail',
+      Description: opts.depositLabel || 'Refundable deposit',
+      SalesItemLineDetail: depositDetail
+    });
+  }
+  if (opts.rentAmount) {
+    var rentDetail = { ItemRef: { value: rentItemId }, Qty: 1, UnitPrice: opts.rentAmount };
+    if (rentTaxCodeId) rentDetail.TaxCodeRef = { value: rentTaxCodeId };
+    lines.push({
+      Amount: opts.rentAmount,
+      DetailType: 'SalesItemLineDetail',
+      Description: opts.rentLabel || 'Storage rent',
+      SalesItemLineDetail: rentDetail
+    });
+  }
+  if (!lines.length) throw new Error('Nothing to invoice.');
+
+  var payload = {
+    CustomerRef: { value: customer.Id },
+    TxnDate: opts.txnDate,
+    PrivateNote: opts.note || 'Created automatically by the website (upfront online booking request).',
+    Line: lines
+  };
+  if (opts.dueDate) payload.DueDate = opts.dueDate;
+  if (depositTaxCodeId || rentTaxCodeId) payload.GlobalTaxCalculation = 'TaxInclusive';
+  if (opts.email) payload.BillEmail = { Address: String(opts.email).trim() };
+
+  var created = await qbRequest(company, 'POST', 'invoice', payload);
+  var emailed = false;
+  if (opts.email && created.Invoice && created.Invoice.Id) {
+    try {
+      await qbRequest(company, 'POST', 'invoice/' + created.Invoice.Id + '/send');
+      emailed = true;
+    } catch (err) {
+      console.error('QuickBooks invoice email failed (invoice itself was created fine):', err.message);
+    }
+  }
+  return { invoice: created.Invoice, emailed: emailed };
+}
+
 module.exports = {
   configured: configured,
   authorizeUrl: authorizeUrl,
   exchangeCode: exchangeCode,
   qbRequest: qbRequest,
   findOrCreateCustomer: findOrCreateCustomer,
-  recordSalesReceipt: recordSalesReceipt
+  recordSalesReceipt: recordSalesReceipt,
+  recordInvoice: recordInvoice
 };
