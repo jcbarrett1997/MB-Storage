@@ -10,10 +10,16 @@ monthly-paying online bookings.
 **Stripe is unchanged** - it still takes the card payment exactly as
 before. This only automates the bookkeeping step afterwards.
 
-**Not covered:** the 6/12-month upfront bookings (no card is taken for
-those - see the existing "upfront booking request" email flow), and your
-ongoing monthly invoices from month 2 onwards, which you continue to raise
-in QuickBooks as normal.
+**Also automated:** 6/12-month upfront booking requests (no card taken)
+get their discounted invoice created in the right company's QuickBooks
+and emailed to the customer automatically - deposit plus 6/12 months'
+rent from the move-in date with the 5%/10% discount applied, due in 3
+days. If QuickBooks is unavailable the emails fall back to "we'll be in
+touch ASAP" and the internal notification asks for the invoice to be
+raised by hand.
+
+**Not covered:** ongoing monthly invoices from month 2 onwards - use
+QuickBooks' built-in Recurring Transactions for those.
 
 Like the rest of the site's integrations, this stays **dormant until
 configured** - nothing breaks if you don't set it up, and no customer
