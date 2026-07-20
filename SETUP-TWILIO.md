@@ -26,9 +26,19 @@ skipped (logged, not a failure) — everything else still goes out.
 ## Step 1 — Twilio account
 
 1. Sign up at **https://www.twilio.com** (or log in if you already have one).
-2. **Buy a phone number** capable of sending SMS to UK numbers (Console →
-   Phone Numbers → Buy a number). A UK number is usually best for
-   deliverability/cost, but a Twilio US number works too.
+2. Register an **Alphanumeric Sender ID** instead of buying a phone number
+   (Console → Messaging → Senders → Alphanumeric Sender IDs → Create new
+   Alphanumeric Sender ID). Enter a sender name up to 11 characters, letters
+   and numbers only, e.g. `MBSTORAGE`. This is a much lighter registration
+   than buying a UK number (which requires a full Regulatory Bundle of ID
+   documents) - usually just a quick review.
+   - Trade-off: an alphanumeric sender ID is **send-only** - customers can't
+     reply to the text. Fine here, since the reminder message already
+     points them to call rather than reply.
+   - If you'd rather have a real UK number customers *can* reply to, you can
+     still buy one instead (Console → Phone Numbers → Buy a number) and
+     complete Twilio's Regulatory Bundle process for it - just use that
+     number (in `+44...` format) as `TWILIO_FROM_NUMBER` below instead.
 3. From the Console dashboard, copy your **Account SID** and **Auth Token**.
 
 ## Step 2 — Netlify environment variables
@@ -39,7 +49,7 @@ In **Site settings → Environment variables**, add:
 |-----|-------|
 | `TWILIO_ACCOUNT_SID` | your Account SID |
 | `TWILIO_AUTH_TOKEN` | your Auth Token |
-| `TWILIO_FROM_NUMBER` | the Twilio number you bought, in `+447...` / `+1...` format |
+| `TWILIO_FROM_NUMBER` | your approved Alphanumeric Sender ID, e.g. `MBSTORAGE` (or a `+447...` number if you went that route instead) |
 | `REMINDER_DAYS_AFTER_DUE` | optional — how many days after the due date to text (default `5`) |
 
 **Deploy.** The function will start running on its daily schedule immediately;
