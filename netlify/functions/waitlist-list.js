@@ -45,6 +45,7 @@ exports.handler = async function (event) {
     return '<tr>' +
       '<td>' + esc(e.name || '') + '</td>' +
       '<td>' + esc(e.email) + '</td>' +
+      '<td>' + esc(e.phone || '') + '</td>' +
       '<td>' + esc(SIZE_LABELS[e.size] || e.size) + '</td>' +
       '<td>' + esc(SITE_LABELS[e.site] || e.site) + '</td>' +
       '<td>' + (e.addedAt ? new Date(e.addedAt).toLocaleString('en-GB', { timeZone: 'Europe/London' }) : '') + '</td>' +
@@ -61,7 +62,7 @@ exports.handler = async function (event) {
     'th{background:#22303a;color:#fff;text-transform:uppercase;font-size:11px;letter-spacing:.05em}' +
     'h1{max-width:900px;margin:0 auto 16px;font-size:20px}</style></head>' +
     '<body><h1>Waiting list (' + entries.length + ')</h1>' +
-    (entries.length ? '<table><tr><th>Name</th><th>Email</th><th>Size</th><th>Site</th><th>Added</th><th>Status</th></tr>' + rows + '</table>'
+    (entries.length ? '<table><tr><th>Name</th><th>Email</th><th>Phone</th><th>Size</th><th>Site</th><th>Added</th><th>Status</th></tr>' + rows + '</table>'
       : '<p style="max-width:900px;margin:0 auto">Nobody is currently on the waiting list.</p>') +
     '</body></html>';
 

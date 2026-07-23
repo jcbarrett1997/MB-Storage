@@ -132,7 +132,7 @@ exports.handler = async function () {
           'Spaces like this go quickly - call 07375 355233 or reply to this email and we\'ll get you booked in.\n\n' +
           'MB Storage | ' + SITE
       });
-      await store.setJSON(key, { name: entry.name, email: entry.email, site: entry.site, size: entry.size, addedAt: entry.addedAt, notified: true, notifiedAt: Date.now() });
+      await store.setJSON(key, { name: entry.name, email: entry.email, phone: entry.phone, site: entry.site, size: entry.size, addedAt: entry.addedAt, notified: true, notifiedAt: Date.now() });
       notified.push(entry.email + ' (' + what + ' @ ' + whereText + ')');
     } catch (err) {
       console.error('Waitlist notify failed for ' + entry.email + ':', err.message);

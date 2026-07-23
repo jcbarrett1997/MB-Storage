@@ -236,6 +236,7 @@ function waitlistUrl(d) {
   q.set('size', d.container_size || '');
   q.set('e', d.email || '');
   if (d.name) q.set('n', String(d.name).slice(0, 100));
+  if (d.phone) q.set('p', String(d.phone).slice(0, 30));
   return SITE + '/.netlify/functions/waitlist?' + q.toString();
 }
 
