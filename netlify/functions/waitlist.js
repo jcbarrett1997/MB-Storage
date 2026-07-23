@@ -3,12 +3,20 @@
  *
  * Reached either from the quote email's fully-booked panel (see quote.js,
  * which already has name/email/phone) or from waiting-list.html (which
- * collects them directly). Both already have everything needed, so this
- * stores the entry in one step - no separate confirm click.
+ * collects them directly). Both already have everything needed.
+ *
+ * Spam/bot protection: Cloudflare Turnstile, same as contact.js. If
+ * TURNSTILE_SITE_KEY is set, the first request shows an interstitial that
+ * runs an invisible check and auto-submits itself the instant it passes -
+ * no click needed from a real visitor, but a bare fetch from an email
+ * security scanner (which never runs the page's JS) can't get through it.
+ * Until TURNSTILE_SITE_KEY/TURNSTILE_SECRET_KEY are set, this step is
+ * skipped entirely and signups store immediately, as before.
  */
 
 var blobs = require('./lib/blobs');
 var sheets = require('./lib/sheets');
+var turnstile = require('./lib/turnstile');
 
 function esc(s) {
   return String(s == null ? '' : s)
@@ -34,6 +42,30 @@ function page(title, body) {
   };
 }
 
+function fieldsUrl(f) {
+  return '?site=' + encodeURIComponent(f.site) + '&size=' + encodeURIComponent(f.size) +
+    '&e=' + encodeURIComponent(f.email) + '&n=' + encodeURIComponent(f.name) + '&p=' + encodeURIComponent(f.phone);
+}
+
+function verifyingPage(siteKey, f) {
+  return page('Just a moment...',
+    '<h2 style="color:#1E4C6B">Just a moment...</h2>' +
+    '<p style="color:#5b5648;line-height:1.6">Checking you\'re a real person before adding you to the waiting list - this only takes a second.</p>' +
+    '<form id="wl-verify" method="GET">' +
+      '<input type="hidden" name="site" value="' + esc(f.site) + '">' +
+      '<input type="hidden" name="size" value="' + esc(f.size) + '">' +
+      '<input type="hidden" name="e" value="' + esc(f.email) + '">' +
+      '<input type="hidden" name="n" value="' + esc(f.name) + '">' +
+      '<input type="hidden" name="p" value="' + esc(f.phone) + '">' +
+      '<input type="hidden" name="t" id="wl-token" value="">' +
+      '<div class="cf-turnstile" data-sitekey="' + esc(siteKey) + '" data-callback="wlVerified" ' +
+        'style="margin:16px auto 0;display:flex;justify-content:center"></div>' +
+      '<noscript><p style="margin-top:16px;color:#b3261e">Please enable JavaScript to join the waiting list, or call us on 07375 355233.</p></noscript>' +
+    '</form>' +
+    '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' +
+    '<script>function wlVerified(token){document.getElementById("wl-token").value=token;document.getElementById("wl-verify").submit();}</script>');
+}
+
 exports.handler = async function (event) {
   var params = event.queryStringParameters || {};
   var email = String(params.e || '').trim().toLowerCase();
@@ -41,6 +73,7 @@ exports.handler = async function (event) {
   var phone = String(params.p || '').trim().slice(0, 30);
   var site = String(params.site || '').trim().toLowerCase();
   var size = String(params.size || '').trim().toLowerCase();
+  var token = String(params.t || '').trim();
 
   if (!email || email.indexOf('@') === -1) {
     return page('Waiting list', '<h2 style="color:#1E4C6B">Something\'s missing</h2><p style="color:#5b5648">This link doesn\'t include a valid email address. Please use the link from your quote email, or the <a href="/waiting-list.html">waiting list page</a>.</p>');
@@ -50,6 +83,23 @@ exports.handler = async function (event) {
   }
   if (!phone) {
     return page('Waiting list', '<h2 style="color:#1E4C6B">Something\'s missing</h2><p style="color:#5b5648">This link doesn\'t include a phone number. Please use the <a href="/waiting-list.html">waiting list page</a> to sign up, or contact us and we\'ll add you by hand.</p>');
+  }
+
+  var fields = { email: email, name: name, phone: phone, site: site, size: size };
+  var siteKey = process.env.TURNSTILE_SITE_KEY;
+
+  if (siteKey && !token) {
+    return verifyingPage(siteKey, fields);
+  }
+  if (siteKey) {
+    var clientIp = event.headers['x-nf-client-connection-ip'] || event.headers['client-ip'];
+    var human = await turnstile.verify(token, clientIp);
+    if (!human) {
+      return page('Sorry - that didn\'t work',
+        '<h2 style="color:#1E4C6B">Sorry - that didn\'t work</h2>' +
+        '<p style="color:#5b5648;line-height:1.6">We couldn\'t verify that submission. Please try again.</p>' +
+        '<a href="' + esc(fieldsUrl(fields)) + '" style="display:inline-block;margin-top:12px;background:#00A34A;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:999px;font-size:15px">Try again</a>');
+    }
   }
 
   var what = SIZE_LABELS[size] + ' at ' + SITE_LABELS[site];
