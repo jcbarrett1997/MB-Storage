@@ -199,8 +199,16 @@ function reviewEmail(greeting) {
   };
 }
 
+// Built from formatToParts rather than trusting a locale's default
+// separator/order (en-CA usually gives YYYY-MM-DD, but that's an
+// assumption about locale data, not a guarantee) - always 'YYYY-MM-DD'.
 function todayInLondon() {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date());
+  var parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(new Date());
+  var map = {};
+  parts.forEach(function (p) { map[p.type] = p.value; });
+  return map.year + '-' + map.month + '-' + map.day;
 }
 
 exports.handler = async function (event) {
@@ -224,10 +232,14 @@ exports.handler = async function (event) {
   var store = blobs.store('review-campaign-batley-log');
   var send = makeSender();
   var results = [];
+  var batchStatus = [];
+  var sentCount = 0, alreadyCount = 0, failedCount = 0;
 
   for (var b = 0; b < BATCHES.length; b++) {
     var batch = BATCHES[b];
-    if (today < batch.date) continue; // not due yet
+    var due = today >= batch.date;
+    batchStatus.push({ date: batch.date, due: due, customers: batch.customers.length });
+    if (!due) continue; // not due yet
 
     for (var i = 0; i < batch.customers.length; i++) {
       var row = batch.customers[i];
@@ -235,20 +247,29 @@ exports.handler = async function (event) {
       var key = 'sent-' + email;
 
       var already = await store.get(key);
-      if (already) continue;
+      if (already) { alreadyCount++; continue; }
 
       try {
         var msg = reviewEmail(greeting);
         await send({ from: FROM, to: [email], reply_to: TO, subject: msg.subject, html: msg.html, text: msg.text });
         await store.setJSON(key, { name: name, sentAt: new Date().toISOString(), batch: batch.date });
         results.push(name + ' <' + email + '> (batch ' + batch.date + ') - sent');
+        sentCount++;
       } catch (err) {
         console.error('Review campaign send failed for ' + email + ':', err.message);
         results.push(name + ' <' + email + '> (batch ' + batch.date + ') - FAILED: ' + err.message);
+        failedCount++;
       }
     }
   }
 
-  console.log('Review campaign (Batley) run ' + today + ':', results.length ? results.join(' | ') : 'nothing due');
-  return { statusCode: 200, body: JSON.stringify({ ok: true, today: today, results: results }) };
+  console.log('Review campaign (Batley) run ' + today + ':', results.length ? results.join(' | ') : 'nothing due',
+    '| batches:', JSON.stringify(batchStatus), '| sent:', sentCount, 'alreadySent:', alreadyCount, 'failed:', failedCount);
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      ok: true, today: today, sentCount: sentCount, alreadyCount: alreadyCount, failedCount: failedCount,
+      batchStatus: batchStatus, results: results
+    })
+  };
 };
