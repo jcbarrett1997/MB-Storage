@@ -75,8 +75,8 @@ there's nothing new to set up as long as section 3 above is done.
 
 ## Checking the waiting list
 
-To see who's currently waiting (name, email, size, site, when they joined,
-whether they've been notified), set `WAITLIST_ADMIN_KEY` in Netlify to any
+To see who's currently waiting (name, email, phone, size, site, when they
+joined, whether they've been notified), set `WAITLIST_ADMIN_KEY` in Netlify to any
 private password-like string, then visit:
 
 `https://www.mbstorage.co.uk/.netlify/functions/waitlist-list?key=YOUR_KEY`

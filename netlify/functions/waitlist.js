@@ -38,6 +38,7 @@ exports.handler = async function (event) {
   var params = event.queryStringParameters || {};
   var email = String(params.e || '').trim().toLowerCase();
   var name = String(params.n || '').trim().slice(0, 100);
+  var phone = String(params.p || '').trim().slice(0, 30);
   var site = String(params.site || '').trim().toLowerCase();
   var size = String(params.size || '').trim().toLowerCase();
 
@@ -52,7 +53,8 @@ exports.handler = async function (event) {
 
   if (params.confirm !== '1') {
     var confirmUrl = '?site=' + encodeURIComponent(site) + '&size=' + encodeURIComponent(size) +
-      '&e=' + encodeURIComponent(email) + '&n=' + encodeURIComponent(name) + '&confirm=1';
+      '&e=' + encodeURIComponent(email) + '&n=' + encodeURIComponent(name) +
+      '&p=' + encodeURIComponent(phone) + '&confirm=1';
     return page('Join the waiting list?',
       '<h2 style="color:#1E4C6B">Join the waiting list?</h2>' +
       '<p style="color:#5b5648;line-height:1.6">We\'ll email <strong>' + esc(email) + '</strong> the moment a ' + esc(what) + ' becomes available. No spam - just the one email when it\'s ready.</p>' +
@@ -62,7 +64,7 @@ exports.handler = async function (event) {
   try {
     var key = 'w-' + site + '-' + size + '-' + email;
     await blobs.store('waitlist-log').setJSON(key, {
-      name: name || 'there', email: email, site: site, size: size, addedAt: Date.now(), notified: false
+      name: name || 'there', email: email, phone: phone, site: site, size: size, addedAt: Date.now(), notified: false
     });
   } catch (err) {
     console.error('Waitlist signup failed:', err);
