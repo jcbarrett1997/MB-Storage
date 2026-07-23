@@ -32,3 +32,8 @@
 # Every 2 hours: email waiting-list customers the moment their size/site frees up
 [functions."waitlist-notify"]
   schedule = "0 */2 * * *"
+
+# Daily 9:30am UTC: one-off Batley Google review campaign, 23-29 Jul 2026
+# batches - see review-campaign-batley.js. Safe to delete both once done.
+[functions."review-campaign-batley"]
+  schedule = "30 9 * * *"
